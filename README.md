@@ -53,5 +53,5 @@ Our attack thus illustrates how adversarial learning can be conducted when the p
 
 ## Dataset and Implementation
 
-We will publish the data set and our implementation here
-after our talk at the USENIX conference in August.
+We will publish the data set and our implementation here,
+in the last week of September (sorry for the delay).
