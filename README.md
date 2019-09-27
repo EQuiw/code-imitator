@@ -54,4 +54,5 @@ Our attack thus illustrates how adversarial learning can be conducted when the p
 ## Dataset and Implementation
 
 We will publish the data set and our implementation here,
-in the last week of September (sorry for the delay).
+in the last week of October ~~September~~(sorry for the delay, due to unrelated projects).
+If you have questions, just write an email..
