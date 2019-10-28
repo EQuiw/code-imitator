@@ -1,0 +1,182 @@
+#include <cctype>
+#include <cerrno>
+#include <cfloat>
+#include <ciso646>
+#include <climits>
+#include <clocale>
+#include <cmath>
+#include <csetjmp>
+#include <csignal>
+#include <cstdarg>
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+
+// C++
+#include <algorithm>
+#include <bitset>
+#include <complex>
+#include <deque>
+#include <exception>
+#include <fstream>
+#include <functional>
+#include <iomanip>
+#include <ios>
+#include <iosfwd>
+#include <iostream>
+#include <istream>
+#include <iterator>
+#include <limits>
+#include <list>
+#include <locale>
+#include <map>
+#include <memory>
+#include <new>
+#include <numeric>
+#include <ostream>
+#include <queue>
+#include <set>
+#include <sstream>
+#include <stack>
+#include <stdexcept>
+#include <streambuf>
+#include <string>
+#include <typeinfo>
+#include <utility>
+#include <valarray>
+#include <vector>
+
+#include <unordered_map>
+#include <unordered_set>
+
+using namespace std;
+typedef unsigned int uint;
+typedef long long ll;
+typedef unsigned long long ull;
+typedef vector<int> vi;
+typedef vector<ll> vll;
+typedef vector<vll> vvll;
+typedef vector<vi> vvi;
+typedef vector<double> vd;
+typedef vector<vd> vvd;
+typedef vector<string> vs;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+
+const int INF = 1 << 30;
+const double EPS = 1e-10;
+
+double zero(double d) { return d < EPS ? 0.0 : d; }
+
+template <class T> bool chmax(T &a, const T &b) {
+  if (a < b) {
+    a = b;
+    return true;
+  }
+  return false;
+}
+
+template <class T> bool chmin(T &a, const T &b) {
+  if (b < a) {
+    a = b;
+    return true;
+  }
+  return false;
+}
+
+template <typename T1, typename T2>
+ostream &operator<<(ostream &os, const pair<T1, T2> &p) {
+  return os << '(' << p.first << ',' << p.second << ')';
+}
+
+template <typename T> ostream &operator<<(ostream &os, const vector<T> &a) {
+  os << '[';
+  for (int i = 0; i < (int)(a.size()); i++)
+    os << (i ? " " : "") << a[i];
+  return os << ']';
+}
+
+string toString(int i) {
+  stringstream ss;
+  ss << i;
+  return ss.str();
+}
+
+const int MOD = 1000000007;
+
+// a^k
+ll fpow(ll a, ll k, int M) {
+  ll res = 1ll;
+  ll x = a;
+  while (k != 0) {
+    if ((k & 1) == 1)
+      res = (res * x) % M;
+    x = (x * x) % M;
+    k >>= 1;
+  }
+  return res;
+}
+
+struct prepare {
+  prepare() {
+    cout.setf(ios::fixed, ios::floatfield);
+    cout.precision(8);
+    ios_base::sync_with_stdio(false);
+  }
+} _prepare;
+
+bool tidy(vi &digits) {
+  for (int i = 1; i < (int)(digits.size()); i++) {
+    if (digits[i - 1] > digits[i])
+      return false;
+  }
+  return true;
+}
+
+vi solve() {
+  ll N;
+  cin >> N;
+
+  vi digits;
+  while (N > 0) {
+    int d = N % 10;
+    digits.push_back(d);
+    N /= 10;
+  }
+  reverse(((digits).begin()), ((digits).end()));
+
+  if (tidy(digits))
+    return digits;
+
+  for (int i = 1; i < (int)(digits.size()); i++) {
+    if (digits[i - 1] >= digits[i]) {
+      if (digits[i - 1] > 1) {
+        digits[i - 1]--;
+        for (int j = i; j < (int)(digits.size()); j++)
+          digits[j] = 9;
+      }
+      break;
+    }
+  }
+
+  if (tidy(digits))
+    return digits;
+
+  vi decreased(digits.size() - 1, 9);
+  return decreased;
+}
+
+int main() {
+  int T;
+  cin >> T;
+  for (int _t = 0; _t < (int)(T); _t++) {
+    cout << "Case #" << (_t + 1) << ": ";
+    vi ans = solve();
+    for (__typeof((ans).begin()) it = (ans).begin(); it != (ans).end(); it++)
+      cout << *it;
+    cout << endl;
+  }
+  return 0;
+}

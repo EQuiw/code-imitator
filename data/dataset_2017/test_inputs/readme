@@ -1,0 +1,15 @@
+8294486 5681755159789568
+- For this problem, we only use the first 55 test cases and not all 99 for a set
+of authors that are defined via call_database.
+
+- various authors had problems in their original version! with test case #56 and (#57).  
+    - iwashi31
+    - kjp4155
+    - Alirzea.bh
+    - ZanderShah
+    - king1224
+    - TrePe
+    - rdst
+    - Wellan
+        - stucks at case #57
+    - moonbing
