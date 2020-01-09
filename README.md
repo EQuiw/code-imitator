@@ -53,6 +53,14 @@ Our attack thus illustrates how adversarial learning can be conducted when the p
 
 ## Dataset and Implementation
 
-We will publish the data set and our implementation here,
-in November in the week after the CCS (sorry for the delay due to unrelated projects, I'd like to add some documentation, but this needs time).
+You can find the data set and parts of our implementation in the respective
+`data` and `src` directory. 
+
+The code transformations are available in the `LibToolingAST` directory.
+Please consider the README file in the `src` directory and the two README files
+in the `LibToolingAST` directory. 
+
+The python code to guide the code transformations will be published in January.
+If you want to reproduce our results from the paper, please wait for the Python code.
+
 If you have questions, just write an email..
