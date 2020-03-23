@@ -54,13 +54,10 @@ Our attack thus illustrates how adversarial learning can be conducted when the p
 ## Dataset and Implementation
 
 You can find the data set and parts of our implementation in the respective
-`data` and `src` directory. 
+`data` and `src` directory.
 
 The code transformations are available in the `LibToolingAST` directory.
 Please consider the README file in the `src` directory and the two README files
-in the `LibToolingAST` directory. 
-
-The python code to guide the code transformations will be published in January.
-If you want to reproduce our results from the paper, please wait for the Python code.
+in the `LibToolingAST` directory.
 
 If you have questions, just write an email..
