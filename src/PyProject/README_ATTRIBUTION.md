@@ -5,14 +5,12 @@ need this step as a requirement for the attacks, of course.
 
 You can either use our dataset (Google Code Jam contest 2017) or
 your own dataset. If you're using our dataset, you do not need to
-consider the *dataset* and *features* step, as the formatted dataset
-and extracted features are also part of the repository.
+consider the *dataset* step, as the formatted dataset
+is also part of the repository.
 
-## Dataset & Features [Optional]
-Run this step only if you have another dataset or you want to understand
-what's going on.
+## Dataset & Features
 
-### Dataset
+### Dataset [Optional]
 - Under the repository's root directory in data/dataset_2017, you will find the
 used dataset.
 - We added the raw dataset, the formatted dataset via clang-format, and
