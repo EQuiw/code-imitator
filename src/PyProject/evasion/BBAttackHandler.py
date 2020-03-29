@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-from featureextraction.CodeStyloMergedFeatures import *
 
+import typing
 from evasion.Author import Author
-from classification.LearnSetup import LearnSetup
+from classification.LearnSetups.LearnSetup import LearnSetup
 from evasion.AttackMode import AttackMode
 import Configuration
 

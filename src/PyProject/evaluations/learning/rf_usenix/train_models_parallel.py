@@ -1,16 +1,17 @@
-from featureextraction import utils_extraction
-from featureextraction.CodeStyloMergedFeatures import CodeStyloMergedFeatures
-from featureextraction.CodeStyloUnigramFeatures import CodeStyloUnigramFeatures
+from featureextractionV2 import utils_extraction
+from featureextractionV2.StyloFeaturesProxy import StyloFeaturesProxy
+from featureextractionV2.StyloFeatures import StyloFeatures
 from classification import StratifiedKFoldProblemId
 
 # import importlib
+import typing
 import os
 import sys
 import numpy as np
 import evasion.utils_launch_attacks
 from ConfigurationLearning.ConfigurationLearning import ConfigurationLearning
 import ConfigurationGlobalLearning as Config
-import classification.utils_classification
+import classification.NovelAPI.utils_classification
 
 ############### Input ##############
 parser = evasion.utils_launch_attacks.getProblemIDParser()
@@ -40,7 +41,7 @@ configuration_learning: ConfigurationLearning = ConfigurationLearning(
 
 learn_method: str = ["RF", "SVM", "DNN"][0]
 feature_method: str = ["Usenix", "CCS18"][0]
-threshold_sel: float = [1.0, 800][0]
+threshold_sel: typing.Union[int, float] = [1.0, 800][0]
 
 # Directory where model files will be stored, set None if you do not want to save anything, or specify a path.
 if configuration_learning.learnmodelspath is not None:
@@ -53,27 +54,21 @@ else:
 ############## Get lexical, layout and syntactic features ##############
 
 if feature_method == "Usenix":
-    features_list = utils_extraction.extract_train_test_features(config_learning=configuration_learning)
-    arffmatrix_train, unigrammmatrix_train, joernmatrix_train = features_list
-    features_merged: CodeStyloMergedFeatures = CodeStyloMergedFeatures([unigrammmatrix_train, joernmatrix_train])  # arffmatrix_train
+    features_merged: StyloFeaturesProxy = utils_extraction.extract_link_train_test_usenix_features(
+        config_learning=configuration_learning)
 
 elif feature_method == "CCS18":
     assert configuration_learning.use_lexems is not True
-    unigrammmatrix_train = CodeStyloUnigramFeatures(inputdata=configuration_learning.datasetpath,
-                                                    nocodesperprogrammer=configuration_learning.probsperprogrammer,
-                                                    noprogrammers=configuration_learning.no_of_programmers,
-                                                    binary=False, tf=True, idf=True,
-                                                    ngram_range=(1, 3), stop_words=configuration_learning.stop_words,
-                                                    trainobject=None)
+    unigrammmatrix_train: StyloFeatures = utils_extraction.extract_train_test_unigram(
+        config_learning=configuration_learning, tf=True, idf=True, ngram_range=(1, 3))
+    features_merged: StyloFeaturesProxy = StyloFeaturesProxy(codestyloreference=unigrammmatrix_train)
 
-    features_merged: CodeStyloMergedFeatures = CodeStyloMergedFeatures(
-        [unigrammmatrix_train])  # joernmatrix_train # arffmatrix_train
 else:
     raise Exception("feature_method")
 
 
 ############## Split dataset into train - test set with our our grouped stratified k-fold ##############
-skf2 = StratifiedKFoldProblemId.StratifiedKFoldProblemId(iids=features_merged.iids, n_splits=8, shuffle=True,
+skf2 = StratifiedKFoldProblemId.StratifiedKFoldProblemId(iids=features_merged.getiids(), n_splits=8, shuffle=True,
                                                          random_state=411,
                                                          nocodesperprogrammer=configuration_learning.probsperprogrammer)
 print("No splits:", skf2.get_n_splits())
@@ -83,11 +78,11 @@ print("No splits:", skf2.get_n_splits())
 accuracy = {}
 
 for train_index, test_index in skf2.split(None, None):
-    curproblemid = "_".join(features_merged.iids[test_index[0]].split("_")[0:2])
+    curproblemid = "_".join(features_merged.getiids()[test_index[0]].split("_")[0:2])
     if curproblemid == PROBLEM_ID_LOADED:
 
         # the following method saves the model and config file into modelsavedir if given
-        accuracy, _ = classification.utils_classification.perform_standard_classification_for_split(
+        accuracy, _ = classification.NovelAPI.utils_classification.perform_standard_classification_for_split(
             features_merged=features_merged,
             train_index=train_index,
             test_index=test_index,

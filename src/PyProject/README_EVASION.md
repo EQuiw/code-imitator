@@ -20,15 +20,18 @@ combination of authors.
 ## Remarks
 There are few issues that may impact your results.
 - First of all, the results / evasion rate depends on the time you let
-the system work. We need to transform code and then run the compiled
-source code to check for the output. If your system is slow and the time
-to run exceeds our threshold, the code is treated as non-valid, although
-a few seconds more would lead to the correct result.
+the system work. We need to transform code and to run the compiled
+source code to check for the output. We use an upper threshold to stop
+programs if they do not terminate.
+If your system is slow and the time to run exceeds our threshold, the code is
+treated as non-valid, although a few seconds more would lead to the correct
+result. *This has a direct impact on the reproducibility*. The outcome of the
+attack thus depends on your system. If your system is slow, the transformers
+should get more time.
 - The transformers work in C++, the MCTS-based attack works in Python.
 We call the transformers by starting a subprocess in Python. This is slow,
 and nowadays, I would have integrated them via Cython directly.
-- Thus, all the attacks are slow and it takes some time to evaluate
-everything for all authors.
+- Thus, the evasion attack needs some time for each author.
 
 ## Evaluation
 For the evaluation, look at the file *PyProject/evaluations/blackbox/attack/blackbox_attack.py*.

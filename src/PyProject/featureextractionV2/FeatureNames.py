@@ -1,7 +1,3 @@
-import numpy as np
-import typing
-
-
 class FeatureName:
     """
     Class to store a feature name for a feature matrix,

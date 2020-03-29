@@ -1,12 +1,11 @@
 import numpy as np
-from featureextraction.CodeStyloMergedFeatures import CodeStyloMergedFeatures
-from classification.LearnSetup import LearnSetup
+from featureextractionV2.StyloFeatures import StyloFeatures
+from classification.LearnSetups.LearnSetup import LearnSetup
 from sklearn import preprocessing
-from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.ensemble import RandomForestClassifier
-from keras.utils.np_utils import to_categorical
 from keras import backend as K
 import keras
+
 
 class LearnSetupRNNRF(LearnSetup):
     """
@@ -14,8 +13,8 @@ class LearnSetupRNNRF(LearnSetup):
     """
 
     def __init__(self,
-                 data_final_train: 'CodeStyloMergedFeatures',
-                 data_final_test: 'CodeStyloMergedFeatures',
+                 data_final_train: 'StyloFeatures',
+                 data_final_test: 'StyloFeatures',
                  clf: keras.models.Sequential,
                  rlf: RandomForestClassifier,
                  stdscaler: preprocessing.StandardScaler):
@@ -50,7 +49,7 @@ class LearnSetupRNNRF(LearnSetup):
         assert self.clf is not None and self.get_deep_features is not None
         assert len(feature_vec.shape) == 2
         assert feature_vec.shape[0] == 1
-        assert feature_vec.shape[1] == self.data_final_train.featurematrix.shape[1]
+        assert feature_vec.shape[1] == self.data_final_train.getfeaturematrix().shape[1]
 
         if self.stdscaler is not None:
             featvec = self.stdscaler.transform(feature_vec[0, :].todense())

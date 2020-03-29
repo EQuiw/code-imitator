@@ -1,23 +1,23 @@
 ## Collect the x authors or author pairs that are valid for all problems ##
 ## This is the weaker version of collect-authorspairs-allmodels.py, as we collect all problems for one model!
 
-from featureextraction import CodeStyloARFFFeatures as a
+from featureextractionV2 import StyloARFFFeatures as a
 from evasion.AttackEval import AttackEvalImpersonation, AttackEvalAbstract
 import pickle
 import os
 import classification.utils_load_learnsetup
-import classification.LearnSetup
+import classification.LearnSetups.LearnSetup
 
 ############################################################# ##########################################################
 import ConfigurationGlobalLearning as Config
 
-threshold_sel: float = 1.25
+threshold_sel: float = 1.0
 learn_method: str = ["RF", "SVM", "DNN"][0] # <<< Choose
 feature_method: str = ["Usenix", "CCS18"][0] # <<< Choose
 
 arffile = os.path.join(Config.repo_path, "data/dataset_2017/libtoolingfeatures_2017_8_formatted_macrosremoved/lexical_features.arff")
-arffmatrix = a.CodeStyloARFFFeatures(inputdata = arffile, removelog=True)
-iids = arffmatrix.iids
+arffmatrix = a.StyloARFFFeatures(inputdata = arffile, removelog=True)
+iids = arffmatrix.getiids()
 del arffmatrix, arffile
 
 problemids: set = set([x.split("_")[0] + "_" + x.split("_")[1] for x in iids])
@@ -28,7 +28,7 @@ authors_4problemid = {}
 for problemid in problemids:
     print("** Load Problem ID: {}".format(problemid))
 
-    testlearnsetup: classification.LearnSetup.LearnSetup = classification.utils_load_learnsetup.load_learnsetup(
+    testlearnsetup: classification.LearnSetups.LearnSetup.LearnSetup = classification.utils_load_learnsetup.load_learnsetup(
         learnmodelspath=Config.learnmodelspath,
         feature_method=feature_method,
         learn_method=learn_method,

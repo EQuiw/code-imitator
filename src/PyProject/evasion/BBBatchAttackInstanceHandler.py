@@ -1,17 +1,17 @@
-import numpy as np
+import os
+import subprocess
+import time
 import typing
+from distutils.util import strtobool
+
+import Configuration as Config
+import evasion.utils_attack
+import evasion.utils_attack_workflow
 from evasion.BBAttackInstance import BBAttackInstance
 from evasion.Transformers.TransformerBase import TransformerBase
-import os
-import evasion.utils_attack_workflow
-import evasion.utils_attack
-import Configuration as Config
-import subprocess
-from distutils.util import strtobool
-import time
-
-from featureextraction.CodeStyloLexemFeatures import CodeStyloLexemFeatures
-from featureextraction.CodeStyloJoernFeatures import CodeStyloJoernFeatures
+from featureextractionV2.ClangTypes.StyloClangFeaturesGenerator import StyloClangFeaturesGenerator
+from featureextractionV2.ClangTypes.StyloLexemFeaturesGenerator import StyloLexemFeatureGenerator
+from featureextractionV2.StyloFeatures import StyloFeatures
 
 
 class BBBatchAttackInstanceHandler:
@@ -42,10 +42,16 @@ class BBBatchAttackInstanceHandler:
 
         # find out what features need to be extracted
         self.doarff = self.dojoern = self.dolexems = False
-        for train_obj in self.inputlist[0][0].bbattackhandler.learnsetup.data_final_train.codestyloobject_list:
-            # doarff = True if isinstance(train_obj, CodeStyloARFFFeatures) else doarff
-            self.dojoern = True if isinstance(train_obj, CodeStyloJoernFeatures) else self.dojoern
-            self.dolexems = True if isinstance(train_obj, CodeStyloLexemFeatures) else self.dolexems
+
+        train_obj: StyloFeatures = self.inputlist[0][0].bbattackhandler.learnsetup.data_final_train
+        while train_obj is not None:
+            # self.doarff # TODO
+            # if not, use old value so we basically implement OR operator here for booleans
+            self.dojoern = True if StyloClangFeaturesGenerator.check_unique_keys_for_trainobject_comparison(
+                trainobj=train_obj) else self.dojoern
+            self.dolexems = True if StyloLexemFeatureGenerator.check_unique_keys_for_trainobject_comparison(
+                trainobj=train_obj) else self.dolexems
+            train_obj = train_obj.codestyloreference
 
 
     def call_gnu_parallel(self, timeout, shfile, ind_timeout):

@@ -1,14 +1,13 @@
 ## Collect the x authors or author pairs that are valid
 ## for all problems across all learning models (USENIX-RF and CSS-RNN)
 
-from featureextraction import CodeStyloARFFFeatures as a
+from featureextractionV2 import StyloARFFFeatures as a
 from evasion.AttackEval import AttackEvalImpersonation, AttackEvalAbstract
 import pickle
 import os
 import classification.utils_load_learnsetup
-import classification.LearnSetup
+import classification.LearnSetups.LearnSetup
 import collections
-import evasion.utils_launch_attacks
 
 Learn_Feature_Choice = collections.namedtuple('Learn_Feature_Choice', 'learn_method feature_method threshold_sel')
 
@@ -23,8 +22,8 @@ import ConfigurationGlobalLearning as Config
 learn_feature_methods = [Learn_Feature_Choice("RF", "Usenix", 1.0), Learn_Feature_Choice("RNN", "CCS18", 800)]
 
 arffile = os.path.join(Config.repo_path, "data/dataset_2017/libtoolingfeatures_2017_8_formatted_macrosremoved/lexical_features.arff")
-arffmatrix = a.CodeStyloARFFFeatures(inputdata = arffile, removelog=True)
-iids = arffmatrix.iids
+arffmatrix = a.StyloARFFFeatures(inputdata = arffile, removelog=True)
+iids = arffmatrix.getiids()
 del arffmatrix, arffile
 
 problemids: set = set([x.split("_")[0] + "_" + x.split("_")[1] for x in iids])
@@ -38,7 +37,7 @@ for problemid in problemids:
     for setting in learn_feature_methods:
         print("** Load Problem ID: {} in setting {}".format(problemid, str(setting)))
 
-        testlearnsetup: classification.LearnSetup.LearnSetup = classification.utils_load_learnsetup.load_learnsetup(
+        testlearnsetup: classification.LearnSetups.LearnSetup.LearnSetup = classification.utils_load_learnsetup.load_learnsetup(
             learnmodelspath=Config.learnmodelspath,
             feature_method=setting.feature_method,
             learn_method=setting.learn_method,

@@ -15,10 +15,10 @@
 #####################################################################################
 #####################################################################################
 
-from featureextraction.CodeStyloARFFFeatures import *
+from featureextractionV2.StyloARFFFeatures import StyloARFFFeatures
 from evasion.BBAttackHandler import BBAttackHandler
 import classification.utils_load_learnsetup
-from featureextraction import CodeStyloARFFFeatures as a
+import numpy as np
 from evasion.AttackLogging import Global_Logging
 from evasion.Author import Author
 from evasion.AttackMode import AttackMode
@@ -28,8 +28,8 @@ import pandas
 
 from Configuration import *
 def getproblemids():
-    arffmatrix = a.CodeStyloARFFFeatures(inputdata=arffile, removelog=True)
-    return np.sort(np.array(list(set([x.split("_")[0] + "_" + x.split("_")[1] for x in arffmatrix.iids]))))
+    arffmatrix = StyloARFFFeatures(inputdata=arffile, removelog=True)
+    return np.sort(np.array(list(set([x.split("_")[0] + "_" + x.split("_")[1] for x in arffmatrix.getiids()]))))
 
 def load_transformers_table():
     df: pandas.DataFrame = pandas.read_csv(transformercsvfile)
@@ -87,7 +87,7 @@ for PROBLEM_ID in PROBLEM_IDS:
             threshold_sel=1.0)
 
     # authors = ["femto", "nofto"]
-    authors = testlearnsetup.data_final_test.authors[:]
+    authors = testlearnsetup.data_final_test.getauthors()[:]
 
     for r in range(len(authors)):
 

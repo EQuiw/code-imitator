@@ -56,7 +56,7 @@ What you need
 
 Afterwards, you should have installed gnu parallel and cmake. And you
 should have the following two directories:
-  - clang+llvm-5.0.1-x86_64-linux-gnu-ubuntu-16.04
+  - clang+llvm-5.0.0-linux-x86_64-ubuntu16.04
   - boost_1_65_1
 
 ## Further requirements

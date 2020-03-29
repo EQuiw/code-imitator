@@ -1,6 +1,7 @@
 import os
-from featureextraction.CodeStyloMergedFeatures import *
+import numpy as np
 import time
+import typing
 import sys
 import traceback
 import subprocess
@@ -12,7 +13,7 @@ from evasion.BBAttackHandler import BBAttackHandler
 from evasion.BBAttackInstance import BBAttackInstance
 from evasion.AttackStatus import AttackStatus
 from evasion.Author import Author
-from classification.LearnSetup import LearnSetup
+from classification.LearnSetups.LearnSetup import LearnSetup
 from evasion.Transformers.TransformerBase import TransformerBase
 from evasion.AttackResult import AttackResult
 from evasion.AttackMode import AttackMode
@@ -71,7 +72,7 @@ class AMonteCarloTreeSearch(BBAttackHandler):
             # A. Init Attack Instance
             attackinstance = BBAttackInstance(sourceauthor = self.sauthor, attackdirauth=self.attackdirauth,
                                               targetauthor = self.tauthor, bbattackhandler=self)
-            self.attackresult.initial_feature_vec = attackinstance.attack_data_merged.featurematrix[0, :].toarray().reshape(-1)
+            self.attackresult.initial_feature_vec = attackinstance.attack_data_merged.getfeaturematrix()[0, :].toarray().reshape(-1)
 
             current_root_node: Node = self.tree.root
             root_state: StateWithAttackInstance = StateWithAttackInstance(transformer=None,
@@ -101,7 +102,7 @@ class AMonteCarloTreeSearch(BBAttackHandler):
 
 
             # C. Finally, collect further information about source file after evasion
-            self.attackresult.final_feature_vec = attackinstance.attack_data_merged.featurematrix[0,
+            self.attackresult.final_feature_vec = attackinstance.attack_data_merged.getfeaturematrix()[0,
                                                  :].toarray().reshape(-1)
             assert attackinstance.log_chosentransformers.shape[1] == 5  # we expect 5 columns, adapt this value if more..
             self.attackresult.log_chosentransformers = attackinstance.log_chosentransformers

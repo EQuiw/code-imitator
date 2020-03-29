@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
-from featureextraction.CodeStyloMergedFeatures import CodeStyloMergedFeatures
-from classification.LearnSetup import LearnSetup
+from featureextractionV2.StyloFeatures import StyloFeatures
+from classification.LearnSetups.LearnSetup import LearnSetup
 
 class LearnSetupRLF(LearnSetup):
     """
@@ -9,8 +9,8 @@ class LearnSetupRLF(LearnSetup):
     """
 
     def __init__(self,
-                 data_final_train: 'CodeStyloMergedFeatures',
-                 data_final_test: 'CodeStyloMergedFeatures',
+                 data_final_train: 'StyloFeatures',
+                 data_final_test: 'StyloFeatures',
                  rlf: RandomForestClassifier):
 
         super(LearnSetupRLF, self).__init__(data_final_train=data_final_train,
@@ -23,7 +23,7 @@ class LearnSetupRLF(LearnSetup):
 
         assert feature_vec.shape[0] == 1
         # assert feature_vec.shape[1] >= self.max_sel_feat_indices
-        assert feature_vec.shape[1] == self.data_final_train.featurematrix.shape[1]
+        assert feature_vec.shape[1] == self.data_final_train.getfeaturematrix().shape[1]
 
         scoreprednew = self.clf.predict_proba(feature_vec[0, :])[0][target_class]
         return scoreprednew
@@ -34,7 +34,7 @@ class LearnSetupRLF(LearnSetup):
 
         assert feature_vec.shape[0] == 1
         # assert feature_vec.shape[1] >= self.max_sel_feat_indices
-        assert feature_vec.shape[1] == self.data_final_train.featurematrix.shape[1]
+        assert feature_vec.shape[1] == self.data_final_train.getfeaturematrix().shape[1]
 
         classprednew = self.clf.predict(feature_vec[0, :])[0]
         return classprednew

@@ -1,7 +1,7 @@
 ############### Variable Definition ##############
 import configparser
 import os
-import sys
+
 
 
 ### Read config.ini to get all path information such as path to this repo, path to clang, path to IWYU, ...

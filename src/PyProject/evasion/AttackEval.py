@@ -1,6 +1,6 @@
 import typing
 
-import classification.LearnSetup
+import classification.LearnSetups.LearnSetup
 import pandas
 import os
 import random
@@ -13,7 +13,7 @@ import sys
 class AttackEvalAbstract(ABC):
 
     def __init__(self,
-                 testlearnsetup: classification.LearnSetup.LearnSetup,
+                 testlearnsetup: classification.LearnSetups.LearnSetup.LearnSetup,
                  attack_dir: str,
                  no_authors: typing.Optional[int],
                  selected_authors: typing.Optional[typing.List[str]],
@@ -37,7 +37,7 @@ class AttackEvalAbstract(ABC):
         self.possible_authors: typing.Dict[str, Author] = {}
 
         if selected_authors is None:
-            selected_authors = testlearnsetup.data_final_test.authors.tolist()
+            selected_authors = testlearnsetup.data_final_test.getauthors().tolist()
 
         if no_authors is None:
             no_authors = len(selected_authors)
@@ -97,7 +97,7 @@ class AttackEvalAbstract(ABC):
 class AttackEvalImpersonation(AttackEvalAbstract):
 
     def __init__(self,
-                 testlearnsetup: classification.LearnSetup.LearnSetup,
+                 testlearnsetup: classification.LearnSetups.LearnSetup.LearnSetup,
                  attack_dir: str,
                  no_authors: typing.Optional[int],
                  selected_authors: typing.Optional[typing.List[str]],
@@ -148,7 +148,7 @@ class AttackEvalImpersonation(AttackEvalAbstract):
 class AttackEvalFixedDodging(AttackEvalAbstract):
 
     def __init__(self,
-                 testlearnsetup: classification.LearnSetup.LearnSetup,
+                 testlearnsetup: classification.LearnSetups.LearnSetup.LearnSetup,
                  attack_dir: str,
                  no_authors: typing.Optional[int],
                  selected_authors: typing.Optional[typing.List[str]],

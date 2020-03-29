@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn import svm
-from featureextraction.CodeStyloMergedFeatures import CodeStyloMergedFeatures
-from classification.LearnSetup import LearnSetup
+from featureextractionV2.StyloFeatures import StyloFeatures
+from classification.LearnSetups.LearnSetup import LearnSetup
 from sklearn import preprocessing
 
 class LearnSetupSVM(LearnSetup):
@@ -10,8 +10,8 @@ class LearnSetupSVM(LearnSetup):
     """
 
     def __init__(self,
-                 data_final_train: 'CodeStyloMergedFeatures',
-                 data_final_test: 'CodeStyloMergedFeatures',
+                 data_final_train: 'StyloFeatures',
+                 data_final_test: 'StyloFeatures',
                  clf: svm.LinearSVC,
                  stdscaler: preprocessing.StandardScaler):
 
@@ -25,7 +25,7 @@ class LearnSetupSVM(LearnSetup):
     def predict_proba(self, feature_vec: np.ndarray, target_class: int):
 
         assert feature_vec.shape[0] == 1
-        assert feature_vec.shape[1] == self.data_final_train.featurematrix.shape[1]
+        assert feature_vec.shape[1] == self.data_final_train.getfeaturematrix().shape[1]
 
         featvec = self.stdscaler.transform(feature_vec[0, :].todense())
         scoreprednew = self.clf.decision_function(featvec)[0][target_class]
@@ -36,7 +36,7 @@ class LearnSetupSVM(LearnSetup):
     def predict(self, feature_vec: np.ndarray):
 
         assert feature_vec.shape[0] == 1
-        assert feature_vec.shape[1] == self.data_final_train.featurematrix.shape[1]
+        assert feature_vec.shape[1] == self.data_final_train.getfeaturematrix().shape[1]
 
         featvec = self.stdscaler.transform(feature_vec[0, :].todense())
         classprednew = self.clf.predict(featvec)[0]

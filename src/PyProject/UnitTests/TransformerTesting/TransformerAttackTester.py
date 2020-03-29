@@ -13,7 +13,7 @@ from UnitTests.TransformerTesting.BBAttackInstanceSecure import BBAttackInstance
 from evasion.BBAttackInstance import BBAttackInstance
 from evasion.Author import Author
 from evasion.AttackMode import AttackMode
-from classification.LearnSetup import LearnSetup
+from classification.LearnSetups.LearnSetup import LearnSetup
 import evasion.Transformers.TransformerBase
 
 class TransformerAttackTester(BBAttackHandler):

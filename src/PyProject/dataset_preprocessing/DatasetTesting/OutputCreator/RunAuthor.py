@@ -6,7 +6,7 @@ from evasion.BBAttackHandler import BBAttackHandler
 from evasion.BBAttackInstance import BBAttackInstance
 from evasion.Author import Author
 from evasion.AttackMode import AttackMode
-from classification.LearnSetup import LearnSetup
+from classification.LearnSetups.LearnSetup import LearnSetup
 
 class RunAuthor(BBAttackHandler):
     """

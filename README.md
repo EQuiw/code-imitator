@@ -53,10 +53,25 @@ Our attack thus illustrates how adversarial learning can be conducted when the p
 
 ## Dataset and Implementation
 
-You can find the data set and parts of our implementation in the respective
-`data` and `src` directory.
+You can find the data set and our implementation in the respective
+`data` and `src` directory. Any further directory has its own README file.
 
-Please consider the README file in the `src` directory. Any further directory
-has its own README file again.
+This repository allows you to perform
+1. *code authorship attribution*. We have a simple API to load features, test
+things and apply learning algorithms. You can easily add new features if
+you are looking for novel ways to identify authors. The code is properly
+separated from all evasion stuff.
 
-If you have questions, just write an email..
+2. *evasion attacks*. You can also use our code transformers to evaluate the
+robustness of current attribution methods against attacks.
+
+If you are using our implementation, please cite our USENIX paper.
+You may use the following BibTex entry:
+```
+@INPROCEEDINGS{QuiMaiRie19,
+  author = {Erwin Quiring and Alwin Maier and Konrad Rieck},
+  title = {Misleading Authorship Attribution of Source Code using Adversarial Learning},
+  booktitle = {Proc. of USENIX Security Symposium},
+  year = {2019},
+}
+```   

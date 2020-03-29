@@ -1,10 +1,10 @@
-from featureextraction.CodeStyloARFFFeatures import *
 from evasion.BBAttackHandler import BBAttackHandler
 import os
 import sys
+import typing
 import evasion.utils_launch_attacks
 import classification.utils_load_learnsetup
-import classification.LearnSetup
+import classification.LearnSetups.LearnSetup
 
 from evasion.Author import Author
 from dataset_preprocessing.DatasetTesting.OutputCreator import RunAuthor
@@ -24,7 +24,7 @@ config.createattackdir(attdir=attackdir)
 
 
 ## just needed for loading all authors
-testlearnsetup: classification.LearnSetup.LearnSetup = classification.utils_load_learnsetup.load_learnsetup(
+testlearnsetup: classification.LearnSetups.LearnSetup.LearnSetup = classification.utils_load_learnsetup.load_learnsetup(
     learnmodelspath=config.learnmodelspath,
     feature_method="Usenix",
     learn_method="RF",
@@ -32,7 +32,7 @@ testlearnsetup: classification.LearnSetup.LearnSetup = classification.utils_load
     threshold_sel=threshold_sel)
 
 
-authors = testlearnsetup.data_final_test.authors
+authors = testlearnsetup.data_final_test.getauthors()
 
 
 ## Now create output file for each author

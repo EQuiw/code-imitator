@@ -1,6 +1,6 @@
 import typing
 from evasion.Transformers.TransformerBase import TransformerBase
-from evasion.Transformers.TemplateTransformers.AddTemplateTransformer import AddTemplateTransformer
+# from evasion.Transformers.TemplateTransformers.AddTemplateTransformer import AddTemplateTransformer
 import numpy as np
 
 # Note #1:

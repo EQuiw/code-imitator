@@ -22,12 +22,17 @@ https://github.com/include-what-you-use/include-what-you-use
   mkdir build
   cd build
   cmake -G "Unix Makefiles" -DIWYU_LLVM_ROOT_PATH=<path-to>/clang+llvm-5.0.0-linux-x86_64-ubuntu16.04 ..
+  make
   ```
 - Summary of steps:
   - Make sure you checkout the branch that corresponds to clang 5.0.
   - Please create the *build* directory inside of include-what-you-use
   - Set the correct path to your clang directory for iwyu.
 - Add the full path of *include-what-you-use/build* to config.ini in PyProject.
+
+- Finally, make sure you have python2 installed. Otherwise, the bash script 
+src/ExternalTransformers/iwyu_replace.sh will not work. It is the only location
+where python 2 is somehow needed in our attribution+evasion project.
 
 2. no other external transformers, yet
 

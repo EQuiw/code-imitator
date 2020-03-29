@@ -1,5 +1,5 @@
 import numpy as np
-from featureextraction.CodeStyloMergedFeatures import CodeStyloMergedFeatures
+from featureextractionV2.StyloFeatures import StyloFeatures
 from abc import ABC, abstractmethod
 
 
@@ -9,8 +9,8 @@ class LearnSetup(ABC):
     """
 
     def __init__(self,
-                 data_final_train: 'CodeStyloMergedFeatures',
-                 data_final_test: 'CodeStyloMergedFeatures',
+                 data_final_train: 'StyloFeatures',
+                 data_final_test: 'StyloFeatures',
                  clf): #typing.Union[RandomForestClassifier, svm.SVC, KerasClassifier]
         self.data_final_test = data_final_test
         self.data_final_train = data_final_train

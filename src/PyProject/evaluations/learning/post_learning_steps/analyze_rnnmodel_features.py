@@ -2,7 +2,7 @@ import numpy as np
 import sys
 import os
 import classification.utils_load_learnsetup
-import classification.LearnSetup
+import classification.LearnSetups.LearnSetup
 
 ### Here, we analyze the model features from RF w.r.t to feature importance   ###
 ### We save all features, sorted w.r.t to rank, in output files in output dir ###
@@ -21,15 +21,15 @@ output_dir = "/tmp/model_features_rnn/"
 os.makedirs(output_dir) if not os.path.exists(output_dir) else print("Use existing dir for models", file=sys.stderr)
 
 
-def get_features(testlearnsetup: classification.LearnSetup):
-    return testlearnsetup.data_final_test.getcolnames()
+def get_features(testlearnsetupx: classification.LearnSetups.LearnSetup):
+    return testlearnsetupx.data_final_test.getcolnames()
 
 
 all_feature_names = set()
 for PROBLEM_ID in PROBLEM_IDS:
     print(PROBLEM_ID)
 
-    testlearnsetup: classification.LearnSetup.LearnSetup = classification.utils_load_learnsetup.load_learnsetup(
+    testlearnsetup: classification.LearnSetups.LearnSetup.LearnSetup = classification.utils_load_learnsetup.load_learnsetup(
         learnmodelspath=Config.learnmodelspath,
         feature_method=feature_method,
         learn_method=learn_method,
@@ -37,16 +37,17 @@ for PROBLEM_ID in PROBLEM_IDS:
         threshold_sel=threshold_sel)
 
     # Data Check: check whether nan are there
-    print(np.min(testlearnsetup.data_final_train.featurematrix), np.max(testlearnsetup.data_final_train.featurematrix),
-        np.min(testlearnsetup.data_final_test.featurematrix), np.max(testlearnsetup.data_final_test.featurematrix))
+    print(np.min(testlearnsetup.data_final_train.getfeaturematrix()), np.max(testlearnsetup.data_final_train.getfeaturematrix()),
+        np.min(testlearnsetup.data_final_test.getfeaturematrix()), np.max(testlearnsetup.data_final_test.getfeaturematrix()))
 
-    feats = get_features(testlearnsetup=testlearnsetup)
+    feats = get_features(testlearnsetupx=testlearnsetup)
     print("Feats:", len(feats))
 
     for feat_v_name in feats:
         all_feature_names.add(feat_v_name)
 
 
+all_feature_names = np.sort(np.array(list(all_feature_names)))
 with open(os.path.join(output_dir, "all_features_unigram_set.log"), "w") as text_file:
     for feat_v in all_feature_names:
         if "_unigram_" in feat_v:

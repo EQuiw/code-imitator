@@ -12,7 +12,7 @@ import os
 from evasion.AttackEval import AttackEvalImpersonation, AttackEvalFixedDodging, AttackEvalAbstract
 import evasion.utils_launch_attacks
 import classification.utils_load_learnsetup
-import classification.LearnSetup
+import classification.LearnSetups.LearnSetup
 from evasion.AttackLogging import Global_Logging, SharedCounters
 import Configuration as config
 from evasion.AttackMode import AttackMode
@@ -60,7 +60,7 @@ config.createattackdir(attdir=resultsdir)
 
 ############################################################# ##########################################################
 # II. Get features #
-testlearnsetup: classification.LearnSetup.LearnSetup = classification.utils_load_learnsetup.load_learnsetup(
+testlearnsetup: classification.LearnSetups.LearnSetup.LearnSetup = classification.utils_load_learnsetup.load_learnsetup(
     learnmodelspath=config.learnmodelspath,
     feature_method=feature_method,
     learn_method=learn_method,
@@ -68,8 +68,8 @@ testlearnsetup: classification.LearnSetup.LearnSetup = classification.utils_load
     threshold_sel=threshold_sel)
 
 # Data Check: check whether nan are there
-print(np.min(testlearnsetup.data_final_train.featurematrix), np.max(testlearnsetup.data_final_train.featurematrix))  # make sure there are no NaN's
-print(np.min(testlearnsetup.data_final_test.featurematrix), np.max(testlearnsetup.data_final_test.featurematrix))
+print(np.min(testlearnsetup.data_final_train.getfeaturematrix()), np.max(testlearnsetup.data_final_train.getfeaturematrix()))  # make sure there are no NaN's
+print(np.min(testlearnsetup.data_final_test.getfeaturematrix()), np.max(testlearnsetup.data_final_test.getfeaturematrix()))
 
 ############################################################# ##########################################################
 # III. Attack -- Code Transformations #

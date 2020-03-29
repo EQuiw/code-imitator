@@ -1,7 +1,8 @@
-from featureextraction.CodeStyloMergedFeatures import CodeStyloMergedFeatures
-from classification.LearnSetup import LearnSetup
+from featureextractionV2.StyloFeatures import StyloFeatures
+from classification.LearnSetups.LearnSetup import LearnSetup
 from ConfigurationLearning.ConfigurationLearning import ConfigurationLearning
-from classification import StratifiedKFoldProblemId, utils_learning
+from classification import StratifiedKFoldProblemId
+from classification.NovelAPI.Learning import Learning
 
 import pickle
 import os
@@ -9,7 +10,7 @@ import numpy as np
 import typing
 
 
-def perform_standard_classification_for_split(features_merged: CodeStyloMergedFeatures,
+def perform_standard_classification_for_split(features_merged: StyloFeatures,
                                               train_index: np.ndarray,
                                               test_index: np.ndarray,
                                               problem_id_test: str,
@@ -31,11 +32,9 @@ def perform_standard_classification_for_split(features_merged: CodeStyloMergedFe
     :param configuration_learning: config
     :param modelsavedir: directory where the model, accuracy value and config file will be saved. If none, nothing
     will be saved.
-    :param threshold_sel: threshold for feature selection. Okay, here it is a little bit sloppy.
-    If you chose a value smaller than 10, we use threshold_sel to select all features whose mutual info. score
-    is larger than threshold; if threshold_sel is larger than 10, it must be an integer and then we
-    take the X best features with X = threshold_sel. Look at __tfidf_feature_selection in utils_learning.py.
-
+    :param threshold_sel: threshold for feature selection.
+    If int, we select 'threshold' features, if float, we select all features whose mutual information score
+    is above 'threshold'. Look at __tfidf_feature_selection in Learning.py
     :param learn_method: learning method, "RF", "SVM", "DNN", and "RNN" are supported.
     :param skf2: StratifiedKFoldProblemId object.
     :return: accuracy as dict (so that problem id from test set is directly available), and LearnSetup.
@@ -44,14 +43,15 @@ def perform_standard_classification_for_split(features_merged: CodeStyloMergedFe
     accuracies = {}
 
     # I. Load features
-    trainfiles: CodeStyloMergedFeatures = features_merged[train_index]
-    testfiles: CodeStyloMergedFeatures = features_merged[test_index]
+    trainfiles: StyloFeatures = features_merged[train_index]
+    testfiles: StyloFeatures = features_merged[test_index]
 
     # II. Learning
-    problemid_test_learn = "_".join(testfiles.iids[0].split("_")[0:2])
+    problemid_test_learn = "_".join(testfiles.getiids()[0].split("_")[0:2])
     assert problem_id_test == problemid_test_learn
 
-    currentaccuracy, curtestlearnsetup = utils_learning.do_learn(train_obj=trainfiles,
+    learning: Learning = Learning()
+    currentaccuracy, curtestlearnsetup = learning.do_learn(train_obj=trainfiles,
                                                                  test_obj=testfiles,
                                                                  config_learning=configuration_learning,
                                                                  modelsavedir=modelsavedir,

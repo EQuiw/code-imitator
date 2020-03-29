@@ -1,6 +1,7 @@
-from featureextraction.CodeStyloMergedFeatures import CodeStyloMergedFeatures
-from featureextraction.CodeStyloUnigramFeatures import CodeStyloUnigramFeatures
+from featureextractionV2.StyloFeaturesProxy import StyloFeaturesProxy
+from featureextractionV2.StyloFeatures import StyloFeatures
 from classification import StratifiedKFoldProblemId
+from featureextractionV2 import utils_extraction
 
 # import importlib
 import os
@@ -10,7 +11,7 @@ import argparse
 
 from ConfigurationLearning.ConfigurationLearningRNN import ConfigurationLearningRNN
 import ConfigurationGlobalLearning as Config
-import classification.utils_classification
+import classification.NovelAPI.utils_classification
 
 ############ Input
 parser = argparse.ArgumentParser(description='Start Attack')
@@ -52,7 +53,7 @@ configuration_learning: ConfigurationLearningRNN = ConfigurationLearningRNN(
                       }
 )
 
-threshold_sel: float = 800
+threshold_sel: int = 800
 learn_method: str = "RNN"
 os.environ["CUDA_VISIBLE_DEVICES"] = GPU_LOADED  # SELECT GPU if available
 
@@ -69,19 +70,14 @@ else:
 ############## Get lexical, layout and syntactic features ##############
 assert feature_method == "CCS18"
 assert configuration_learning.use_lexems is not True
-unigrammmatrix_train = CodeStyloUnigramFeatures(inputdata=configuration_learning.datasetpath,
-                                                    nocodesperprogrammer=configuration_learning.probsperprogrammer,
-                                                    noprogrammers=configuration_learning.no_of_programmers,
-                                                    binary=False, tf=True, idf=True,
-                                                    ngram_range=(1,3), stop_words=configuration_learning.stop_words,
-                                                    trainobject=None)
+unigrammmatrix_train: StyloFeatures = utils_extraction.extract_train_test_unigram(
+        config_learning=configuration_learning, tf=True, idf=True, ngram_range=(1, 3))
 
-features_merged: CodeStyloMergedFeatures = CodeStyloMergedFeatures([unigrammmatrix_train]) # joernmatrix_train # arffmatrix_train
-
+features_merged: StyloFeaturesProxy = StyloFeaturesProxy(codestyloreference=unigrammmatrix_train)
 
 
 ############## Split dataset into train - test set with our our grouped stratified k-fold ##############
-skf2 = StratifiedKFoldProblemId.StratifiedKFoldProblemId(iids=features_merged.iids, n_splits=8, shuffle=True,
+skf2 = StratifiedKFoldProblemId.StratifiedKFoldProblemId(iids=features_merged.getiids(), n_splits=8, shuffle=True,
                                                          random_state=411,
                                                          nocodesperprogrammer=configuration_learning.probsperprogrammer)
 print("No splits:", skf2.get_n_splits())
@@ -91,10 +87,10 @@ print("No splits:", skf2.get_n_splits())
 accuracy = {}
 
 for train_index, test_index in skf2.split(None, None):
-    curproblemid = "_".join(features_merged.iids[test_index[0]].split("_")[0:2])
+    curproblemid = "_".join(features_merged.getiids()[test_index[0]].split("_")[0:2])
     if curproblemid == PROBLEM_ID_LOADED:
 
-        accuracy, _ = classification.utils_classification.perform_standard_classification_for_split(
+        accuracy, _ = classification.NovelAPI.utils_classification.perform_standard_classification_for_split(
             features_merged=features_merged,
             train_index=train_index,
             test_index=test_index,

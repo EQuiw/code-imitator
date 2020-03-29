@@ -4,7 +4,9 @@
 # import evasion.utils_attack_workflow as uaw
 # import Configuration as Config
 import os
-from featureextraction.CodeStyloMergedFeatures import *
+import typing
+import numpy as np
+# from featureextractionV2.StyloFeatures import StyloFeatures
 
 import random
 import pandas
@@ -20,7 +22,7 @@ from evasion.BBAttackInstance import BBAttackInstance
 from evasion.AttackStatus import AttackStatus
 from evasion.AttackMode import AttackMode
 from evasion.Author import Author
-from classification.LearnSetup import LearnSetup
+from classification.LearnSetups.LearnSetup import LearnSetup
 import evasion.Transformers.TransformerBase
 from evasion.AttackResult import AttackResult
 from evasion.BlackBox.AttackSettings import SimAnnealingSettings

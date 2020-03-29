@@ -1,10 +1,19 @@
-from featureextraction.CodeStyloARFFFeatures import CodeStyloARFFFeatures
-from featureextraction.CodeStyloUnigramFeatures import CodeStyloUnigramFeatures
-from featureextraction.CodeStyloJoernFeatures import CodeStyloJoernFeatures
-from featureextraction.CodeStyloMergedFeatures import CodeStyloMergedFeatures
 from evasion.utils_attack_workflow import *
-from featureextraction.CodeStyloFeatures import CodeStyloFeatures
-from featureextraction.CodeStyloLexemFeatures import CodeStyloLexemFeatures
+# from featureextraction.CodeStyloFeatures import CodeStyloFeatures
+# from featureextraction.CodeStyloLexemFeatures import CodeStyloLexemFeatures
+# from featureextraction.CodeStyloARFFFeatures import CodeStyloARFFFeatures
+# from featureextraction.CodeStyloUnigramFeatures import CodeStyloUnigramFeatures
+# from featureextraction.CodeStyloJoernFeatures import CodeStyloJoernFeatures
+# from featureextraction.CodeStyloMergedFeatures import CodeStyloMergedFeatures
+
+from featureextractionV2.StyloFeatures import StyloFeatures
+from featureextractionV2.StyloFeaturesProxy import StyloFeaturesProxy
+from featureextractionV2.StyloUnigramFeatures import StyloUnigramFeatures
+from featureextractionV2.StyloARFFFeatures import StyloARFFFeatures
+from featureextractionV2.ClangTypes.StyloClangFeaturesAbstract import StyloClangFeaturesAbstract
+from featureextractionV2.ClangTypes.StyloLexemFeaturesGenerator import StyloLexemFeatureGenerator
+from featureextractionV2.ClangTypes.StyloClangFeaturesGenerator import StyloClangFeaturesGenerator
+
 
 import subprocess
 import Configuration
@@ -144,7 +153,7 @@ def extractfeatures_evasion(src: str, output_dir: str, use_arff: bool, use_clang
 
 
 def load_new_features_merged(datasetpath: str, attackdirauth: str, verbose: bool, cppfile: str,
-                             train_object: CodeStyloMergedFeatures, already_extracted: bool) -> CodeStyloMergedFeatures:
+                             train_object: StyloFeatures, already_extracted: bool) -> StyloFeatures:
     """
     New interface for loading features.
     Loads a single feature vector for a given source file-author.
@@ -153,49 +162,81 @@ def load_new_features_merged(datasetpath: str, attackdirauth: str, verbose: bool
     :param attackdirauth:
     :param verbose:
     :param cppfile:
-    :param train_object: CodeStyloMergedFeatures object
+    :param train_object: StyloFeatures object
     :param already_extracted: bool to indicate if clang-lexems-arff features were already extracted from
     cpp file. If you are unsure, set it to False. We use it only if we perform all transformations
     via gnu parallel, so that we also extract the features in parallel.
-    :return: CodeStyloMergedFeatures object
+    :return: StyloFeatures object
     """
-    o: typing.List[CodeStyloFeatures] = __load_new_features(datasetpath=datasetpath, attackdirauth=attackdirauth,
-                                                   verbose=verbose, cppfile=cppfile,
-                                                   train_objects=train_object.codestyloobject_list,
-                                                   already_extracted=already_extracted)
-    co: CodeStyloMergedFeatures = CodeStyloMergedFeatures(o)
-    co.update_tfidffeatures(trainobject=train_object)
-    co.update_columns(index=None, trainobject=train_object)
+    loaded_styloobjects: typing.List[StyloFeatures] = __load_new_features(datasetpath=datasetpath,
+                                                                          attackdirauth=attackdirauth,
+                                                                          verbose=verbose, cppfile=cppfile,
+                                                                          train_object=train_object,
+                                                                          already_extracted=already_extracted)
+
+    # now link the objects
+    assert len(loaded_styloobjects) > 0
+    prev_o = loaded_styloobjects[0]
+    if len(loaded_styloobjects) >= 2:
+        for ixx in range(1, len(loaded_styloobjects)):
+            next_o = loaded_styloobjects[ixx]
+            prev_o.setnextstylo(codestyloreference=next_o)
+            prev_o = next_o
+
+    # create proxy
+    # No need to check if an object was present in trainobject, but no respective novel element was created for that,
+    # since createtfidf and selectcolumns will perform a key check!
+    co: StyloFeaturesProxy = StyloFeaturesProxy(codestyloreference=loaded_styloobjects[0])
+
+    co.createtfidffeatures(trainobject=train_object)
+    co.selectcolumns(index=None, trainobject=train_object)
+
     return co
 
-
-def load_new_features(datasetpath: str, attackdirauth: str, verbose: bool, cppfile: str, train_objects: list):
-    """
-    Loads a single feature vector for a given source file - author.
-    Deprecated.
-    :param datasetpath:
-    :param attackdirauth:
-    :param verbose:
-    :param cppfile:
-    :param train_objects:
-    :return:
-    """
-    print("load_new_features method is deprecated", file=sys.stderr)
-    return __load_new_features(datasetpath=datasetpath, attackdirauth=attackdirauth,
-                                                   verbose=verbose, cppfile=cppfile,
-                                                   train_objects=train_objects,
-                                                   already_extracted=False)
+    # co: CodeStyloMergedFeatures = CodeStyloMergedFeatures(o)
+    # co.update_tfidffeatures(trainobject=train_object)
+    # co.update_columns(index=None, trainobject=train_object)
+    # return co
 
 
-def __load_new_features(datasetpath: str, attackdirauth: str, verbose: bool, cppfile: str, train_objects: list,
+# def load_new_features(datasetpath: str, attackdirauth: str, verbose: bool, cppfile: str, train_objects: list):
+#     """
+#     Loads a single feature vector for a given source file - author.
+#     Deprecated.
+#     :param datasetpath:
+#     :param attackdirauth:
+#     :param verbose:
+#     :param cppfile:
+#     :param train_objects:
+#     :return:
+#     """
+#     print("load_new_features method is deprecated", file=sys.stderr)
+#     return __load_new_features(datasetpath=datasetpath, attackdirauth=attackdirauth,
+#                                                    verbose=verbose, cppfile=cppfile,
+#                                                    train_objects=train_objects,
+#                                                    already_extracted=False)
+
+
+def __load_new_features(datasetpath: str, attackdirauth: str, verbose: bool, cppfile: str, train_object: StyloFeatures,
                         already_extracted: bool):
 
-    # A. Determine what feature classes are needed; unigram features are read from Python directly.
+    # A. Determine what feature classes should be extracted via command-line
+    #   (remember: unigram features are read from Python directly).
     doarff = dojoern = dolexems = False
-    for train_obj in train_objects:
-        doarff = True if isinstance(train_obj, CodeStyloARFFFeatures) else doarff
-        dojoern = True if isinstance(train_obj, CodeStyloJoernFeatures) else dojoern
-        dolexems = True if isinstance(train_obj, CodeStyloLexemFeatures) else dolexems
+
+    current_train_obj: StyloFeatures = train_object
+    while current_train_obj is not None:
+        # if not, use old value so we basically implement OR operator here for booleans
+        doarff = True if isinstance(current_train_obj, StyloARFFFeatures) else doarff
+        dojoern = True if StyloClangFeaturesGenerator.check_unique_keys_for_trainobject_comparison(trainobj=current_train_obj) else dojoern
+        dolexems = True if StyloLexemFeatureGenerator.check_unique_keys_for_trainobject_comparison(trainobj=current_train_obj) else dolexems
+        current_train_obj = current_train_obj.codestyloreference
+
+
+    # for train_obj in train_objects:
+    #     doarff = True if isinstance(train_obj, CodeStyloARFFFeatures) else doarff
+    #     dojoern = True if isinstance(train_obj, CodeStyloJoernFeatures) else dojoern
+    #     dolexems = True if isinstance(train_obj, CodeStyloLexemFeatures) else dolexems
 
     # Extract features
     dict_clang, lexems = extractfeatures_evasion(src = cppfile, output_dir=attackdirauth,
@@ -203,41 +244,56 @@ def __load_new_features(datasetpath: str, attackdirauth: str, verbose: bool, cpp
                                                  already_extracted=already_extracted)
 
     # B. Load calculated features into Python
-    attack_data = []  # type: list[CodeStyloFeatures]
-    for train_obj in train_objects:
+    attack_data: typing.List[StyloFeatures] = []
+    current_train_obj: StyloFeatures = train_object
+    while current_train_obj is not None:
 
-        if isinstance(train_obj, CodeStyloARFFFeatures):
+        if isinstance(current_train_obj, StyloARFFFeatures):
             # i. Get Arff features from java implementation
-            arffmatrix_att = CodeStyloARFFFeatures(inputdata=os.path.join(attackdirauth, "lexical_features.arff"),
+            arffmatrix_att = StyloARFFFeatures(inputdata=os.path.join(attackdirauth, "lexical_features.arff"),
                                                    removelog=True)
             attack_data.append(arffmatrix_att)
 
-        elif isinstance(train_obj, CodeStyloUnigramFeatures):
+        elif isinstance(current_train_obj, StyloUnigramFeatures):
             # ii.a Get WordUnigramTF features
-            unigrammmatrix_att = CodeStyloUnigramFeatures(inputdata=cppfile, nocodesperprogrammer=1,
+            unigrammmatrix_att = StyloUnigramFeatures(inputdata=cppfile, nocodesperprogrammer=1,
                                                           noprogrammers=1, binary=False,
-                                                          tf=train_obj.tf, idf=train_obj.idf,
-                                                          ngram_range=train_obj.ngram_range,
-                                                          stop_words=train_obj.stop_words,
-                                                          trainobject=train_obj)
+                                                          tf=current_train_obj.tf, idf=current_train_obj.idf,
+                                                          ngram_range=current_train_obj.ngram_range,
+                                                          stop_words=current_train_obj.stop_words,
+                                                          trainobject=current_train_obj)
             attack_data.append(unigrammmatrix_att)
 
-        elif isinstance(train_obj, CodeStyloLexemFeatures):
+        elif StyloLexemFeatureGenerator.check_unique_keys_for_trainobject_comparison(trainobj=current_train_obj):
             # ii.b Get LexemTF features
-            unigrammmatrix_att = CodeStyloLexemFeatures(inputdata=lexems,
-                                                        tf=train_obj.tf, idf=train_obj.idf, trainobject=train_obj,
+            assert isinstance(current_train_obj, StyloClangFeaturesAbstract)  # make following type check happy
+            unigrammmatrix_att = StyloLexemFeatureGenerator(inputdata=lexems,
+                                                        tf=current_train_obj.tf, idf=current_train_obj.idf,
+                                                            trainobject=current_train_obj,
                                                         verbose=verbose)
-            attack_data.append(unigrammmatrix_att)
+            attack_data.append(unigrammmatrix_att.styloobject)
+            current_train_obj = unigrammmatrix_att.lasttrainobj
 
-        elif isinstance(train_obj, CodeStyloJoernFeatures):
+        elif StyloClangFeaturesGenerator.check_unique_keys_for_trainobject_comparison(trainobj=current_train_obj):
+            assert isinstance(current_train_obj, StyloClangFeaturesAbstract) # make following type check happy
             # iii. Get joern features
-            joernmatrix_att = CodeStyloJoernFeatures(inputdata=dict_clang,
-                                                     get_lexical_features=train_obj.get_lexical_features,
+            joernmatrix_att = StyloClangFeaturesGenerator(inputdata=dict_clang,
+                                                     get_lexical_features=None,
                                                      verbose=verbose,
-                                                     tf=train_obj.tf, tfidf=train_obj.tfidf,
-                                                     trainobject=train_obj)
-            attack_data.append(joernmatrix_att)
-            # print("->", attackdirauth, "::", np.mean(joernmatrix_att.featurematrix.todense())) #todo
+                                                     trainobject=current_train_obj)
+
+            attack_data.extend(joernmatrix_att.styloobjects_list)
+            # we may have jumped over multiple trainobjects in the generator, so update current train obj.:
+            current_train_obj = joernmatrix_att.lasttrainobj
+
+        elif isinstance(current_train_obj, StyloFeaturesProxy):
+            pass # go to its first object that StyloFeaturesProxy object references
+
+        else:
+            raise Exception("Utils-attack: unknown training object was passed and I do not know which object"
+                            "should be created for this training object")
+
+        current_train_obj = current_train_obj.codestyloreference
 
 
     # C. Last but not least: Clean previous .dat files

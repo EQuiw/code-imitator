@@ -9,12 +9,12 @@ from evasion.AttackEval import AttackEvalImpersonation, AttackEvalFixedDodging, 
 import evasion.utils_launch_attacks
 from evasion.AttackMode import AttackMode
 import classification.utils_load_learnsetup
-import classification.LearnSetup
+from classification.LearnSetups.LearnSetup import LearnSetup
 from evasion.AttackLogging import Global_Logging, SharedCounters
 import argparse
 import evaluations.blackbox.utils
 from evasion.EvasionAlgorithm import EvasionAlgorithm
-from evasion.BlackBox.AttackSettings import AttackSettings, SimAnnealingSettings, MCTSClassicSettings
+from evasion.BlackBox.AttackSettings import SimAnnealingSettings, MCTSClassicSettings
 
 import Configuration as config
 
@@ -91,7 +91,7 @@ config.createattackdir(attdir=resultsdir)
 
 ############################################################# ##########################################################
 # II. Get features #
-testlearnsetup: classification.LearnSetup.LearnSetup = classification.utils_load_learnsetup.load_learnsetup(
+testlearnsetup: LearnSetup = classification.utils_load_learnsetup.load_learnsetup(
     learnmodelspath=config.learnmodelspath,
     feature_method=feature_method,
     learn_method=learn_method,
@@ -99,8 +99,8 @@ testlearnsetup: classification.LearnSetup.LearnSetup = classification.utils_load
     threshold_sel=threshold_sel)
 
 # Data Check: check whether nan are there
-print(np.min(testlearnsetup.data_final_train.featurematrix), np.max(testlearnsetup.data_final_train.featurematrix))
-print(np.min(testlearnsetup.data_final_test.featurematrix), np.max(testlearnsetup.data_final_test.featurematrix))
+print(np.min(testlearnsetup.data_final_train.getfeaturematrix()), np.max(testlearnsetup.data_final_train.getfeaturematrix()))
+print(np.min(testlearnsetup.data_final_test.getfeaturematrix()), np.max(testlearnsetup.data_final_test.getfeaturematrix()))
 
 ############################################################# ##########################################################
 # III. Attack -- Code Transformations #

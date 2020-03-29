@@ -8,15 +8,16 @@
 
 """
 
-from featureextraction import utils_extraction
-from featureextraction.CodeStyloMergedFeatures import CodeStyloMergedFeatures
+from featureextractionV2.StyloFeaturesProxy import StyloFeaturesProxy
+from featureextractionV2.StyloFeatures import StyloFeatures
 from classification import StratifiedKFoldProblemId
 import os
 import typing
 import ConfigurationGlobalLearning as Config
 from ConfigurationLearning.ConfigurationLearning import ConfigurationLearning
 from ConfigurationLearning.ConfigurationLearningRNN import ConfigurationLearningRNN
-import classification.utils_classification
+import featureextractionV2.utils_extraction
+from classification.NovelAPI.utils_classification import perform_standard_classification_for_split
 
 
 PROBLEM_ID_LOADED = "3264486_5736519012712448"
@@ -59,18 +60,18 @@ class TestFeatureExtraction(unittest.TestCase):
             }
         )
 
-        features_list = utils_extraction.extract_train_test_features(config_learning=configuration_learning)
-        _, unigrammmatrix_train, joernmatrix_train = features_list
-        features_merged: CodeStyloMergedFeatures = CodeStyloMergedFeatures(
-            [unigrammmatrix_train, joernmatrix_train])
+        features_merged: StyloFeaturesProxy = featureextractionV2.utils_extraction.extract_link_train_test_usenix_features(
+            config_learning=configuration_learning)
 
-        c1, c2, c3 = TestFeatureExtraction.learn_process(features_merged=features_merged,
+        c1, c2, c3, c4, c5 = TestFeatureExtraction.learn_process(features_merged=features_merged,
                            learn_config=configuration_learning,
                            learn_method="RF")
 
         self.assertAlmostEqual(c1, 0.882352941176, delta=10e-5)
         self.assertAlmostEqual(c2, 0.675606, delta=10e-5)
         self.assertAlmostEqual(c3, 0.72316664, delta=10e-5)
+        self.assertAlmostEqual(c4, 0.0432594, delta=10e-5)
+        self.assertAlmostEqual(c5, 22.0, delta=10e-5)
 
 
     # def test_ccs18_lstm(self):
@@ -122,19 +123,19 @@ class TestFeatureExtraction(unittest.TestCase):
 
 
     @staticmethod
-    def learn_process(features_merged: CodeStyloMergedFeatures,
+    def learn_process(features_merged: StyloFeatures,
                       learn_method: str,
                       learn_config: typing.Union[ConfigurationLearning, ConfigurationLearningRNN]):
-        skf2 = StratifiedKFoldProblemId.StratifiedKFoldProblemId(iids=features_merged.iids, n_splits=8, shuffle=True,
+        skf2 = StratifiedKFoldProblemId.StratifiedKFoldProblemId(iids=features_merged.getiids(), n_splits=8, shuffle=True,
                                                                  random_state=411,
                                                                  nocodesperprogrammer=learn_config.probsperprogrammer)
 
         for train_index, test_index in skf2.split(None, None):
-            curproblemid = "_".join(features_merged.iids[test_index[0]].split("_")[0:2])
+            curproblemid = "_".join(features_merged.getiids()[test_index[0]].split("_")[0:2])
             if curproblemid == PROBLEM_ID_LOADED:
 
                 # I. Do classification
-                accuracy, curtestlearnsetup = classification.utils_classification.perform_standard_classification_for_split(
+                accuracy, curtestlearnsetup = perform_standard_classification_for_split(
                     features_merged=features_merged,
                     train_index=train_index,
                     test_index=test_index,
@@ -150,10 +151,17 @@ class TestFeatureExtraction(unittest.TestCase):
                 currentaccuracy = accuracy[curproblemid]
 
                 print(currentaccuracy)
-                print(curtestlearnsetup.data_final_test.featurematrix.mean())
-                print(curtestlearnsetup.data_final_train.featurematrix.mean())
+                print(curtestlearnsetup.data_final_test.getfeaturematrix().mean())
+                print(curtestlearnsetup.data_final_train.getfeaturematrix().mean())
+                print(curtestlearnsetup.data_final_test.getfeaturematrix()[:,:10].mean())
+                print(curtestlearnsetup.data_final_train.getfeaturematrix().max())
 
                 return currentaccuracy, \
-                       curtestlearnsetup.data_final_test.featurematrix.mean(), \
-                       curtestlearnsetup.data_final_train.featurematrix.mean()
+                       curtestlearnsetup.data_final_test.getfeaturematrix().mean(), \
+                       curtestlearnsetup.data_final_train.getfeaturematrix().mean(), \
+                       curtestlearnsetup.data_final_test.getfeaturematrix()[:, :10].mean(), \
+                       curtestlearnsetup.data_final_train.getfeaturematrix().max()
 
+
+if __name__ == '__main__':
+    unittest.main()

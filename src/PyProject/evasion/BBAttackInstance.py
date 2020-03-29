@@ -1,16 +1,18 @@
+import copy
+import os
+import shutil
+import typing
+
+import pandas
+
+import Configuration as Config
 import evasion.utils_attack as ua
 import evasion.utils_attack_workflow as uaw
-import Configuration as Config
-import os
-from featureextraction.CodeStyloMergedFeatures import *
-import shutil
-from evasion.BBAttackHandler import BBAttackHandler
-from evasion.Transformers.TransformerHandler import TransformerHandler
-import copy
 from evasion.AttackLogging.Attack_Logging import Logger
-from evasion.Transformers import TransformerBase
 from evasion.Author import Author
-import pandas
+from evasion.BBAttackHandler import BBAttackHandler
+from evasion.Transformers import TransformerBase
+from evasion.Transformers.TransformerHandler import TransformerHandler
 
 
 class BBAttackInstance:
@@ -221,10 +223,10 @@ class BBAttackInstance:
 
         # B. Evaluate and update score and class of target class
         self.scoreprednew = self.bbattackhandler.learnsetup.predict_proba(
-            feature_vec=self.attack_data_merged.featurematrix[0, :],
+            feature_vec=self.attack_data_merged.getfeaturematrix()[0, :],
             target_class=target_class)
         self.classprednew = self.bbattackhandler.learnsetup.predict(
-            feature_vec=self.attack_data_merged.featurematrix[0, :])
+            feature_vec=self.attack_data_merged.getfeaturematrix()[0, :])
 
         if verbose >= 1:
             print("\t Pred:{} /({})".format(round(self.scoreprednew, 4), self.classprednew))
@@ -251,7 +253,7 @@ class BBAttackInstance:
         Returns the score of given class index..
         """
         scorepredtrue = self.bbattackhandler.learnsetup.predict_proba(
-            feature_vec=self.attack_data_merged.featurematrix[0, :],
+            feature_vec=self.attack_data_merged.getfeaturematrix()[0, :],
             target_class=classind)
         return scorepredtrue
 

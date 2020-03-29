@@ -1,5 +1,5 @@
 import classification.utils_load_learnsetup
-import classification.LearnSetup
+import classification.LearnSetups.LearnSetup
 
 
 def compute_impersonation_pairs(batch_id, authorspairs, possible_authors, total_no_batches):
@@ -25,7 +25,7 @@ def __compute_pairs(batch_id, authorspairs, possible_authors, total_no_batches):
 def compute_dodging_pairs(batch_id, total_no_batches, learnmodelspath, feature_method, learn_method, problem_id, threshold_sel):
 
     # first, load all possible authors
-    testlearnsetup_temp: classification.LearnSetup.LearnSetup = classification.utils_load_learnsetup.load_learnsetup(
+    testlearnsetup_temp: classification.LearnSetups.LearnSetup.LearnSetup = classification.utils_load_learnsetup.load_learnsetup(
         learnmodelspath=learnmodelspath,
         feature_method=feature_method,
         learn_method=learn_method,
@@ -39,7 +39,7 @@ def compute_dodging_pairs(batch_id, total_no_batches, learnmodelspath, feature_m
 
 def compute_dodging_pairs_preloaded_learnsetup(testlearnsetup, batch_id, total_no_batches):
 
-    possible_authors = testlearnsetup.data_final_test.authors.tolist()
+    possible_authors = testlearnsetup.data_final_test.getauthors().tolist()
     total = len(possible_authors)
 
     # now select the range of authors in current batch

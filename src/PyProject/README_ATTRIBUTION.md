@@ -5,14 +5,14 @@ need this step as a requirement for the attacks, of course.
 
 You can either use our dataset (Google Code Jam contest 2017) or
 your own dataset. If you're using our dataset, you do not need to
-consider the *dataset* and *features* step, as the formatted dataset
-and extracted features are also part of the repository.
+consider the *dataset* step, as the formatted dataset
+is also part of the repository.
 
-## Dataset & Features [Optional]
-Run this step only if you have another dataset or you want to understand
-what's going on.
+(Do not forget to look at our tutorial in the evaluations directory!)
 
-### Dataset
+## Dataset & Features
+
+### Dataset [Optional]
 - Under the repository's root directory in data/dataset_2017, you will find the
 used dataset.
 - We added the raw dataset, the formatted dataset via clang-format, and
@@ -68,8 +68,17 @@ If something goes wrong, check if all your paths are correctly set.
 Check that all files are present. Check you've called the file with the correct
 python path. Otherwise, you can contact me if you cannot find the error.
 
-### Learn your first model
-Now let's look how we can learn a simple classification model.
+### Tutorial
+Look at the ```evaluations/tutorial_classification.py``` and ```evaluations/tutorial_classification_2.py```. 
+They provide a detailed tutorial about the feature API and how to create a first learning model.
+
+### Learning
+- To create the final learning models for your evaluation, consider 
+the file ```evaluations/learning/rf_usenix/train_models_parallel.py```.
+- If you do not start the script via bash (see start_train_models_parallel.sh),
+ pass the PROBLEM_ID in python as string simply, and remove the args parser.
+- Go through the script step by step.
+- For Abuhamad et al., we have an equivalent script located under *rnn_css*.
 
 #### Structure
 A short introduction to the python directories, as located under *PyProject*:
@@ -92,50 +101,42 @@ A short introduction to the python directories, as located under *PyProject*:
   - This directory contains all the learning code.
 - *ConfigurationLearning*
   - These classes here bundle all the settings for learning.
-- *featureextraction*
+- *featureextractionV2*
   - All classes that extract the different types of features.
 
-#### Learning
-- Open ```evaluations/learning/rf_usenix/train_models_parallel.py```
-- If you do not start the script via bash (see start_train_models_parallel.sh),
- pass the PROBLEM_ID in python as string simply, and remove the args parser.
-- Go through the script step by step.
-- For Abuhamad et al., we have an equivalent script located under *rnn_css*.
-
 ### Some notes about the feature classes
-- In the following, I will introduce the different feature classes
-in the directory *PyProject/featureextraction*.
-- *CodeStyloFeatures*  is the abstract parent class.
+- *StyloFeatures*  is the abstract parent class.
 - Then, we have a child class for the different sources of features.
-We have features that we load from the java implementation by Caliskan et al,
-we have features we can get from Python directly and we have features that we obtain from our clang implementation (all the AST features).
+We have features that we load from the java implementation by Caliskan et al.,
+we have features that we can get from Python directly and we have features 
+that we obtain from our clang implementation (all the AST features).
 - Features sources:
-  1. *CodeStyloARFFFeatures* contains the features that we load from the
+  1. *StyloARFFFeatures* contains the features that we load from the
   Java implementation by Caliskan et al..
     - It mostly contains layout features.
     - The lexical features that are present in this feature type
-    are also present in our other feature sources. Therefore, you will often see that we do not load the ARFF features in our experiments.
+    are also present in our other feature sources. Therefore, you will often see 
+    that we do not load the ARFF features in our experiments.
     And that's why it is actually optional to set up all the java stuff.
     - Example: the number of functions is also given by an AST node type.
   2. Unigrams / Lexems:
-    - We have two classes *CodeStyloUnigramFeatures* and *CodeStyloLexemFeatures* to get unigram features.
-    - The first loads the source code files in Python, and tokens are directly
-    extracted in Python.
-    - The second class loads the lexems extracted by clang.
+    - To get unigram/lexem features, we have two implementations.
+    - StyloUnigramFeatures loads the source code files in Python, and tokens 
+    are directly extracted in Python.
+    - The second way loads the lexems as extracted by clang (look at the 
+    StyloLexemsFeaturesGenerator.py).
     - Both methods have almost the same output, and you can use the python
     version for convenience.
-  3. *CodeStyloJoernFeatures*:
-    - This class contains all clang-based features, such as AST bigrams or
-      AST code in leaves features.
-- *CodeStyloMergedFeatures* is a class to bundle all different feature classes.
-It serves as a proxy to the individual feature classes, so that we can use
-a single feature matrix later.
+  3. *StyloClangFeaturesAbstract*:
+    - Classes that inherit from this class contain all clang-based features, 
+    such as AST bigrams or *AST code in leaves* features.
+
 
 - Another remark about the td-idf stuff: It is important that we perform
 the tf-idf transformation only on the respective training set for any split
-during the cross-validation. That's why we have the function *gettfidffeatures*.
+during the cross-validation. That's why we have the function *createtfidffeatures*.
 If we have a training feature matrix, we call it without a trainingobject. Then,
 we perform a tf-idf weighting on the training matrix. Later for the 'test'
 matrix, we can simply pass the training object and we use the normalization
-parameters from the  training step for the test matrix as well. This avoids
+parameters from the training step for the test matrix as well. This avoids
 data snooping.

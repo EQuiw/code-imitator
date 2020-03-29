@@ -2,13 +2,14 @@
 # While RLF and SVM is really easy (we just need to load the pickle file),
 # the DNN with keras is just a little bit more complicated. Here, we need to
 # load the LearnSetup and the keras model and then combine them again.
-import classification.LearnSetup
+import classification.LearnSetups.LearnSetup
 import os
 import pickle
+import typing
 
 
-def load_learnsetup(learnmodelspath: str, feature_method: str, learn_method: str, problem_id: str, threshold_sel: float)\
-        -> classification.LearnSetup:
+def load_learnsetup(learnmodelspath: str, feature_method: str, learn_method: str, problem_id: str, threshold_sel: typing.Union[int, float])\
+        -> classification.LearnSetups.LearnSetup:
     """
         Loads the learn setup.
     :param learnmodelspath: path where models are located

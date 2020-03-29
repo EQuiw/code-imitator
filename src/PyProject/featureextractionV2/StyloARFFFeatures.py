@@ -1,12 +1,13 @@
 import arff
-from featureextraction import CodeStyloFeatures
-from featureextraction.FeatureNames import FeatureName
+from featureextractionV2.StyloFeaturesAbstract import StyloFeaturesAbstract
+from featureextractionV2.FeatureNames import FeatureName
 import numpy as np
 from scipy import sparse
 import utils_authorship
 import typing
 
-class CodeStyloARFFFeatures(CodeStyloFeatures.CodeStyloFeatures):
+
+class StyloARFFFeatures(StyloFeaturesAbstract):
     """
     This class loads the ARFF features from the Java Implementation used by the Usenix paper.
     """
@@ -19,26 +20,29 @@ class CodeStyloARFFFeatures(CodeStyloFeatures.CodeStyloFeatures):
         """
 
         # call parent's init method that will call read_data_from_source
-        super(CodeStyloARFFFeatures, self).__init__(inputdata=inputdata, trainobject=None)
+        super(StyloARFFFeatures, self).__init__(inputdata=inputdata, tf=False, idf=False, trainobject=None)
 
         # ii) np.inf possible as log( some feature value is zero ) during feature extraction
         # I'll convert each log feature back by applying the inverse function
         if removelog is True:
-            self.featurematrix, self.colnames = CodeStyloARFFFeatures.convertlogback(self.featurematrix, self.colnames)
+            self._featurematrix, self._colnames = StyloARFFFeatures.convertlogback(self._featurematrix, self._colnames)
 
+
+    def getunique_key(self) -> str:
+        return "_".join(["arff"])
 
     # @Overwrite
     def read_data_from_source(self, inputdata: str, trainobject) -> typing.Tuple[sparse.csr_matrix, list, np.ndarray, np.ndarray]:
 
-        # A. Load arf file obtained from java program
-        dataset = self.__import_arff_file(inputdata)
+        # A. Load arff file obtained from java program
+        dataset = StyloARFFFeatures.__import_arff_file(inputdata)
 
         # B. Convert the feature set to usable numpy array with float values
         # Two steps necessary: a) convert booleans to 0/1 b) remove label columns
-        return self.__extractfeaturematrix(dataset = dataset)
+        return StyloARFFFeatures.__extractfeaturematrix(dataset = dataset)
 
-
-    def __import_arff_file(self, inputdata: str) -> typing.Dict[str, typing.Any]:
+    @staticmethod
+    def __import_arff_file(inputdata: str) -> typing.Dict[str, typing.Any]:
         """
         Reads the arff file via arff package
         :return: loaded arff features as dict
@@ -47,8 +51,8 @@ class CodeStyloARFFFeatures(CodeStyloFeatures.CodeStyloFeatures):
             dataset = arff.load(fh)
         return dataset
 
-
-    def __extractfeaturematrix(self, dataset: typing.Dict[str, typing.Any])\
+    @staticmethod
+    def __extractfeaturematrix(dataset: typing.Dict[str, typing.Any])\
                         -> typing.Tuple[sparse.csr_matrix, list, np.ndarray, np.ndarray]:
         """
         Extracts the feature matrix from the imported arff file.
@@ -106,6 +110,3 @@ class CodeStyloARFFFeatures(CodeStyloFeatures.CodeStyloFeatures):
         return sparse.csr_matrix(data), column_names
 
 
-    # @Overwrite
-    def gettfidffeatures(self, trainobject: typing.Optional['CodeStyloFeatures']):
-        return self.featurematrix, self.colnames
