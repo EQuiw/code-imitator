@@ -1,0 +1,1 @@
+- both pickle files should contain the author pairs used in our evaluation
