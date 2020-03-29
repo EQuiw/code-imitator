@@ -20,26 +20,28 @@ Moreover, to understand the code transformations, you should have
 a good understand of clang and LibTooling.
 
 Last warning: *Do NOT use the code transformers in real-world applications.*
-They work well for our considered dataset, but for another dataset,
+They work well for our considered dataset. They will not be applicable
+to other datasets in general. For instance, our transformers assume a
+single source file and do not resolve dependencies across multiple cpp/h files.
+To this end, you will need to adapt the transformers.
 
 ## Getting Started
 
 What you need
 - LLVM and Clang 5.0.0
-    * So you can simply download the pre-compiled
-    packages.
+    * If your OS is supported, you can simply download the pre-compiled
+    packages, e.g. if you have Ubuntu.
         - Visit http://releases.llvm.org/download.html and select
         e.g. `Clang for x86_64 Ubuntu 16.04` if you're using Ubuntu.
-    * Set Cmake option (e.g. in your IDE):
-    `-DMY_CLANG_ROOT_DIR=/home/path/to/clang+llvm-5.0.0`
 
-    * [Optional] Set `$PATH` to clang+llvm so that you can
-    run `llvm-config` from your command line.
-    Actually you don't need to set $PATH, but
-    if you will try some things on the command
-    line later, it is really useful. For instance, you may add
+    * [Recommended] Set `$PATH` to clang+llvm so that you can
+    run `llvm-config` from your command line. Actually you don't need to set
+    $PATH, but if you will try some things on the command line later, it is
+    really useful. To add the path information, you may add
     `export PATH="/home/PATH-TO/clang+llvm-5.0.0-linux-x86_64-ubuntu16.04/bin:$PATH"`
     to your .profile or .bashrc if you are using Ubuntu 16.04.
+    * Take care not to use clang 5.0.1 (otherwise,
+      you might need to adapt paths, such as in Configuration.py).
 
 - cmake >= 3.9 (probably an older version will
     also work)
@@ -47,36 +49,66 @@ What you need
 - gnu parallel >= 20161122
 
 - Boost (header files)
-    * We just need the header files for the graph
-    datatype, no build process ;)
-    * We used Boost 1.65.1, simply download the
-    directory from the official website
-    * Set Cmake option (e.g. in your IDE):
-    `-DMY_BOOST_ROOT_DIR=/home/path/to/boost_1_65_1`
+    * We just need the header files for the graph datatype, no build process.
+    * We used Boost 1.65.1, simply download boost_1_65_1.tar.gz from the
+    [official website](https://www.boost.org/users/history/).
 
 
-Compile all in release-mode.
-In debug-mode, we will print some debug-messages..
+Afterwards, you should have installed gnu parallel and cmake. And you
+should have the following two directories:
+  - clang+llvm-5.0.1-x86_64-linux-gnu-ubuntu-16.04
+  - boost_1_65_1
 
+## Further requirements
+- In the case that you get some errors in the following compilation steps,
+it can be that the following libraries are missing or a link is missing.
 
+- In the case of the cmake error 'cannot find -lstdc++',
+you may follow the following instructions:
+https://github.com/box/augmented_types/issues/11
 
-### A first example
+- Sometimes necessary:
+```
+sudo apt-get install libstdc++-5-dev
+sudo apt-get install libtinfo-dev
+sudo apt-get install lib32z1-dev
+sudo apt-get install build-essential
+```
+
+## Compilation
+I describe two ways.
+
+### IDE
+* In clion, you include the LibTooling directory as project.
+* Set Cmake option:
+  `-DMY_CLANG_ROOT_DIR=/home/path/to/clang+llvm-5.0.0-linux-x86_64-ubuntu16.04`
+* Set Cmake option:
+  `-DMY_BOOST_ROOT_DIR=/home/path/to/boost_1_65_1`
+* Depending on the clang+llvm version you have downloaded, you may need
+to adapt the paths of course.
+
+* Compile all in release-mode. In debug-mode, we will print some debug-messages.
+
+### Command-line
+* go to LibTooling directory.
+* Then run
+```
+mkdir cmake-build-release
+cd cmake-build-release
+```
+* Then run
+```
+cmake .. -DMY_CLANG_ROOT_DIR=<path-to>/clang+llvm-5.0.0-linux-x86_64-ubuntu16.04 -DMY_BOOST_ROOT_DIR=<path-to>/boost_1_65_1
+make
+```
+
+## A first example
 
 - Let's try to extract the AST node types.
 1. Import the project into your IDE...
 2. Run cmake
 3. Run configuration.
     * Let's run `get_ast_node_types.cpp`
-
-- In the case of an cmake error, i.e. 'cannot find -lstdc++',
-you may follow the following instructions:
-https://github.com/box/augmented_types/issues/11
-
-Sometimes necessary:
-sudo apt-get install libstdc++-5-dev
-sudo apt-get install libtinfo-dev
-sudo apt-get install lib32z1-dev
-sudo apt-get install build-essential
 
 ## Project
 
@@ -201,7 +233,7 @@ If possible, use the newer API for variables, and the CFG for function reference
   - 123: If our code transformer was not able to rewrite a code location
   although there was an opportunity, we return the code 123
   - There are some more status codes that are specific to some transformers.
-  - 
+  -
 
 ### Unused Transformers
 - IncludeSort, can be used directly in Python via adding:

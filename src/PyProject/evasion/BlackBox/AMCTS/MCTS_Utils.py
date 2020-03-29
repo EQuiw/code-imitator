@@ -1,0 +1,2 @@
+class ExpandNodeException(Exception):
+    pass

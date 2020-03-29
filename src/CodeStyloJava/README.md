@@ -21,12 +21,12 @@
 
 # Getting started
 
-- Go [here](https://github.com/calaylin/CodeStylometry) and download the SCAA
-directory. Put it under *CodeStyloJava*. We need the libraries.
 - Include this project as a Java project. The following description is based
 on IDEA as IDE (just to outline the principle, other workflows work equally,
 	you just have to create a callable jar file).
 	- make sure you import the libraries under SCAA/
+		- If you have problems with the libraries, go [here](https://github.com/calaylin/CodeStylometry)
+		and download the full SCAA directory again. Put it under *CodeStyloJava*.
 	- a first test: compile everything with Driver.java as main class
 - Now create a JAR file
 	- maybe the following [link](https://www.jetbrains.com/help/idea/packaging-a-module-into-a-jar-file.html#)

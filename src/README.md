@@ -1,56 +1,40 @@
 # Authorship Evasion
 
 ## Overview
-TODO... description how all pieces fit together...
+Here, you find different README files that belong to the different steps
+of the project.
 
 ## First Steps
 
-1. Environment variables.
-
-  - Add the bin path of clang to .profile or an equivalent file.
-  For instance, `export PATH="/home/PATH-TO/clang+llvm-5.0.0-linux-x86_64-ubuntu16.04/bin:$PATH"`
-  For instance, you should be able to call `llvm-config --libdir` directly from shell.
-  Be careful, if you add the variable in .profile, you may have to log out and log in again, otherwise
-  Python may not find the variable.
+### Environment variables.
 
   - [Optional] Add to .profile an environment variable to the position of the authorship evasion repo.
     `export AUTHORSHIP_EVASION="PATH/TO/REPO/authorship-evasion/"`.
 
-  - Adjust the config_example.ini file in PyProject.
-    This file saves all paths that we need to consider, such as path to this repo, path to clang, etc.
-    What you have to do:
-        1. Copy config_example.ini to config.ini
-        2. Adjust config.ini to your own paths
-        3. For IWYU, use a path like: `/home/<YOUR_PATH>/iwyu-trunk/include-what-you-use/build/`
-    - Assure that Configuration.py and config.ini are in the same directory.
-
-2. Set up projects.
+### Set up projects.
 
 The project consists of multiple smaller sub projects to have a modular structure.
+Each of the following directories has a own README file. Some projects
+are optional, such as the java project (which is necessary for some layout features,
+  which we not need necessarily).
 
-The python project:
-- You need Python >= 3.6
-- Look at the requirements.txt
+1. The LibTooling AST project:
+  - You will find a detailed README in the LibToolingAST directory. Please compile
+  everything, as we will the feature extractors and transformers for
+  code attribution and evasion, respectively.
+  - You find the [README here](./LibToolingAST/README.md)
 
-The LibTooling AST project:
-- You will find a detailed README in the LibToolingAST directory.
+2. The Java Project [Optional]
+  - You find the [README here](./CodeStyloJava/README.md)
+  - is taken and adapted from Caliskan et al.
+  - The driver class is the main entry...
+  - the java-based features are already extracted for the full dataset, so you can read them,
+  - but if you want to read the java-based features for a new file, you must create the jar file and export the path...
 
-ExternalTransformers:
+3. The python project:
+  - You find the [README here](./PyProject/README.md)
+
+4. ExternalTransformers [Optional]:
 - Here, we put some information how we can integrate stand-alone tools such as
- Include-What-You-Use. 
-
-The Java Project:
-- is taken and adapted from Caliskan et al.
-- The driver class is the main entry...
-- the java-based features are already extracted for the full dataset, so you can read them,
-- but if you want to read the java-based features for a new file, you must create the jar file and export the path...
-
-- We've found some minor important bugs in the Naive Baseline implementation. That's why
-we have reimplemented some features via clang. For example, the branching factor
-can be determined much more reliably via the compiler than via regex. 
-Moreover, we've adapted some other minor things. We added a character set
-and it is now possible to add either the path of the different authors or a particular source file directly.
-But we'd like to emphasize that it is very good that the authors have published their code.
-
-
-
+ Include-What-You-Use.
+ - You find the [README here](./ExternalTransformers/README.md)
