@@ -75,6 +75,11 @@ sudo apt-get install lib32z1-dev
 sudo apt-get install build-essential
 ```
 
+With Ubuntu 20, the following will be necessary:
+```
+sudo apt-get install libncurses5
+```
+
 ## Compilation
 I describe two ways.
 

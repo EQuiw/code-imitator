@@ -42,6 +42,14 @@ the feature extraction commands.
   - The remaining paths are extracted automatically.
 3. Run the bash script.
 
+Note:
+- *It is important to extract the features for each system again*. So you need
+to run the extractfeatures_single.sh file for each dataset on each system. 
+The features can vary very slightly from system to system. 
+- This should have no impact on the attribution and evasion, but the results will 
+be more interpretable, as you can see what features changed after a code transformation.
+
+
 
 ## Machine Learning
 Now we switch to the python world. We have all the features as json file.
