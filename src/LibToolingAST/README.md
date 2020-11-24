@@ -80,6 +80,8 @@ With Ubuntu 20, the following will be necessary:
 sudo apt-get install libncurses5
 ```
 
+- Sometimes, it is also necessary to install `libgmp-dev` (via apt-get install)
+
 ## Compilation
 I describe two ways.
 
@@ -115,8 +117,15 @@ make
 3. Run configuration.
     * Let's run `get_ast_node_types.cpp`
 
-## Project
 
+
+## Technical Details About the Project
+- The following is only necessary to read if you are planning to use LibTooling
+ or to adapt our code transformations. If you are more interested in misleading
+ the code attribution, you just need to compile the transformers as described
+ above. You can then skip this section.
+
+### Structure
 - We decided to implement each feature class
 in a modular way, so we may have some redundant
 code sometimes, but for each class we have another
@@ -160,22 +169,13 @@ as entry points.
     why we use two files..
 
 - All tools are called by our bash script
-`feature_extraction.sh`. Adapt the paths there.
-    - Some authors may use non-standard libraries,
-we fixed some microsoft-specific things we've found
-sometimes in ourerrors.h. Adapt the path in the bash
-script.
-    - Probably you will have to install `libgmp-dev`
-    (via apt-get install)
-    - Download boost (no need to install it,
-we just need the header files). Adapt the include cmd
-in the feature_extraction.sh file to the correct
-directory.
-
+`extractfeatures_single.sh`. Read the
+[attribution-markdown](../PyProject/README_ATTRIBUTION.md) to find out more
+how to extract the features.
 
 ### Tests
 - In the `tests` directory.
-- Based on catch library that is already in the dir
+- Based on catch library that is already in the dir.
 
 ### Transformers
 
