@@ -4,7 +4,7 @@
     If Path Error: you may need to adapt the path in Configuration.py from 'config.ini' to its full absolute path,
     if you have problems with PYPATH...
 
-    TODO - add CCS version, but so far, output is always slightly different, check seeds in learning process...
+    TODO - add CCS version
 
 """
 
@@ -42,7 +42,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         configuration_learning: ConfigurationLearning = ConfigurationLearning(
             repo_path=Config.repo_path,
-            dataset_features_dir=os.path.join(Config.repo_path, "data/dataset_2017"),
+            dataset_features_dir=os.path.join(Config.repo_path, "data/dataset_2017/libtoolingfeatures_for_public_testing"),
             suffix_data="_2017_8_formatted_macrosremoved",
             learnmodelspath=None,
             use_lexems=False,
@@ -67,58 +67,13 @@ class TestFeatureExtraction(unittest.TestCase):
                            learn_config=configuration_learning,
                            learn_method="RF")
 
-        self.assertAlmostEqual(c1, 0.882352941176, delta=10e-5)
-        self.assertAlmostEqual(c2, 0.675606, delta=10e-5)
-        self.assertAlmostEqual(c3, 0.72316664, delta=10e-5)
+        self.assertAlmostEqual(c1, 0.877450980392, delta=10e-5)
+        self.assertAlmostEqual(c2, 0.675454, delta=10e-5)
+        self.assertAlmostEqual(c3, 0.722788, delta=10e-5)
         self.assertAlmostEqual(c4, 0.0432594, delta=10e-5)
         self.assertAlmostEqual(c5, 22.0, delta=10e-5)
 
 
-    # def test_ccs18_lstm(self):
-    #     """
-    #     Test Abuhamad et al. -- CCS18 with LSTM approach.
-    #     """
-    #
-    #     configuration_learning: ConfigurationLearningRNN = ConfigurationLearningRNN(
-    #         repo_path=Config.repo_path,
-    #         dataset_features_dir=os.path.join(Config.repo_path, "data/dataset_2017"),
-    #         suffix_data="_2017_8_formatted_macrosremoved",
-    #         learnmodelspath=Config.learnmodelspath,
-    #         use_lexems=False,
-    #         use_lexical_features=False,
-    #         stop_words=Config.stop_words_codestylo,
-    #         probsperprogrammer=Config.probsperprogrammer,
-    #         noofparallelthreads=8,
-    #         scale=True,
-    #         cv_optimize_rlf_params=False,
-    #         cv_use_rnn_output=True,
-    #         hyperparameters={
-    #               "RNN_epochs": [200], #350], #50],
-    #               "RNN_nounits": [32, 256], #, feature_dim],
-    #               "RNN_dropout": [0.6],
-    #               "RNN_lstmlayersno": [3],
-    #               "RNN_denselayersno": [3],
-    #               "RNN_l2reg": [0.00001],
-    #               "RNN_denseneurons": [0.45]
-    #               }
-    #     )
-    #
-    #     unigrammmatrix_train = CodeStyloUnigramFeatures(inputdata=configuration_learning.datasetpath,
-    #                                                     nocodesperprogrammer=configuration_learning.probsperprogrammer,
-    #                                                     noprogrammers=204, binary=False, tf=True, idf=True,
-    #                                                     ngram_range=(1, 2), stop_words=configuration_learning.stop_words,
-    #                                                     trainobject=None) # take just uni- bi-grams
-    #
-    #     features_merged: CodeStyloMergedFeatures = CodeStyloMergedFeatures(
-    #         [unigrammmatrix_train])
-    #
-    #     c1, c2, c3 = self.learn_process(features_merged=features_merged,
-    #                        learn_config=configuration_learning,
-    #                        learn_method="RNN")
-    #
-    #     self.assertAlmostEqual(c1, 0.485294117647) # 0.475490196078)
-    #     self.assertAlmostEqual(c2, 0.0193488, delta=10e-5)
-    #     self.assertAlmostEqual(c3, 0.01498, delta=10e-5)
 
 
 

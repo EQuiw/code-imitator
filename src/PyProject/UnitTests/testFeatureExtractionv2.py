@@ -26,7 +26,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         configuration_learning: ConfigurationLearning = ConfigurationLearning(
             repo_path=Config.repo_path,
-            dataset_features_dir=os.path.join(Config.repo_path, "data/dataset_2017"),
+            dataset_features_dir=os.path.join(Config.repo_path, "data/dataset_2017/libtoolingfeatures_for_public_testing/"),
             suffix_data="_2017_8_formatted_macrosremoved",
             learnmodelspath=Config.learnmodelspath,
             use_lexems=False,
@@ -59,8 +59,8 @@ class TestFeatureExtraction(unittest.TestCase):
         features_merged: StyloFeaturesProxy = utils_extraction.extract_link_train_test_usenix_features(
             config_learning=configuration_learning)
 
-        print("jo-cl", features_merged.codestyloreference.codestyloreference.getfeaturematrix().mean(),
-              "should be: 0.0929585")
+        self.assertAlmostEqual(float(features_merged.codestyloreference.codestyloreference.getfeaturematrix().mean()),
+                               0.0929152, delta=10e-6) # float cmd just for type hints
 
         # C. Merge the objects into one matrix / feature representation
         self.data_final_train = features_merged[train_index]
@@ -108,13 +108,13 @@ class TestFeatureExtraction(unittest.TestCase):
         self.assertAlmostEqual(minmaxvals[0], 0.0, delta=10e-8)
         self.assertAlmostEqual(minmaxvals[1], 33.0, delta=10e-8)
 
-        self.assertAlmostEqual(self.data_final_train.getfeaturematrix().mean(), 0.019623403, delta=10e-6)
+        self.assertAlmostEqual(self.data_final_train.getfeaturematrix().mean(), 0.019612662, delta=10e-6)
         # self.assertAlmostEqual(self.data_final_train.codestyloreference.codestyloreference.getfeaturematrix().mean(), 0.103251,
         #                        delta=10e-6)
 
         xnms = self.data_final_train.getcolnames()
         xnms_str = ''.join(xnms)
-        self.assertEqual(hashlib.md5(xnms_str.encode()).hexdigest(), '6b9cd31568ea0d37af38665b5dd91cf7')
+        self.assertEqual(hashlib.md5(xnms_str.encode()).hexdigest(), '01012c6f3a8f9b45d75e745842c34947')
 
     def __settest(self):
         # B. test set
@@ -122,23 +122,23 @@ class TestFeatureExtraction(unittest.TestCase):
         self.assertAlmostEqual(minmaxvals[0], 0.0, delta=10e-8)
         self.assertAlmostEqual(minmaxvals[1], 22.0, delta=10e-8)
 
-        self.assertAlmostEqual(self.data_final_test.getfeaturematrix().mean(), 0.015926704, delta=10e-6)
+        self.assertAlmostEqual(self.data_final_test.getfeaturematrix().mean(), 0.0159195, delta=10e-6)
 
         xnms = self.data_final_test.getcolnames()
         xnms_str = ''.join(xnms)
-        self.assertEqual(hashlib.md5(xnms_str.encode()).hexdigest(), '6b9cd31568ea0d37af38665b5dd91cf7')
+        self.assertEqual(hashlib.md5(xnms_str.encode()).hexdigest(), '01012c6f3a8f9b45d75e745842c34947')
 
     def __settraintestlexems(self):
 
         sum_lex_test = self.data_final_test_lexems.getfeaturematrix().sum()
-        self.assertAlmostEqual(self.data_final_train_lexems.getfeaturematrix().mean(), 0.099166259, delta=10e-6)
-        self.assertAlmostEqual(self.data_final_test_lexems.getfeaturematrix().mean(), 0.060524642, delta=10e-6)
-        self.assertAlmostEqual(sum_lex_test, 360557.84, delta=10e-1)
-        self.assertAlmostEqual(self.data_final_test_lexems.codestyloreference._featurematrix.mean(), 0.061693329)
+        self.assertAlmostEqual(self.data_final_train_lexems.getfeaturematrix().mean(), 0.099126689, delta=10e-6)
+        self.assertAlmostEqual(self.data_final_test_lexems.getfeaturematrix().mean(), 0.060499839, delta=10e-6)
+        self.assertAlmostEqual(sum_lex_test, 360545.88, delta=10e-1)
+        self.assertAlmostEqual(self.data_final_test_lexems.codestyloreference._featurematrix.mean(), 0.061677273)
 
     def __settraintestlexicalsarff(self):
-        self.assertAlmostEqual(self.data_final_train_lexicals.getfeaturematrix().mean(), 0.088444114, delta=10e-6)
-        self.assertAlmostEqual(self.data_final_test_lexicals.getfeaturematrix().mean(), 0.055106826, delta=10e-6)
+        self.assertAlmostEqual(self.data_final_train_lexicals.getfeaturematrix().mean(), 0.088408329, delta=10e-6)
+        self.assertAlmostEqual(self.data_final_test_lexicals.getfeaturematrix().mean(), 0.055086121, delta=10e-6)
 
         xnms = [str(x) for x in self.data_final_test_lexicals.getauthors()]
         xnms_str = ''.join(xnms)

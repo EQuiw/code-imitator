@@ -27,8 +27,8 @@ Then activate the environment via ```conda activate authorshipevasion```.
 in your python environment. I strongly recommend using a virtualenv or
 conda environment.
 
-3. Adjust the config_example.ini file in PyProject.
-  - This file saves all paths that we need to consider, such as path to this repo, path to clang, etc.
+3. Adjust the configuration in PyProject.
+  - The config file saves all paths that we need to consider, such as path to this repo, path to clang, etc.
   What you have to do:
       1. Copy config_example.ini to config.ini
       2. Adjust config.ini to your own paths
